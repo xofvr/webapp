@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  webapp:
+    build:
+      context: .
+      dockerfile: src/Web/Dockerfile
+    ports:
+      - "5000:80"
+    depends_on:
+      - db
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=db;Database=portfolio;User=root;Password=passoword;
+    networks:
+      - portfolio-network
+
+  db:
+    image: mysql:8.0
+    platform: linux/amd64 # Specify platform for M1 compatibility
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=portfolio
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./sql-init:/docker-entrypoint-initdb.d
+    networks:
+      - portfolio-network
+
+networks:
+  portfolio-network:
+
+volumes:
+  mysql-data:
