@@ -28,15 +28,10 @@ if (!string.IsNullOrEmpty(connectionString))
         options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 }
 
-// Register Application Insights if configured
-var appInsightsConnectionString = builder.Configuration.GetSection("ApplicationInsights:ConnectionString").Value;
-if (!string.IsNullOrEmpty(appInsightsConnectionString))
-{
-    builder.Services.AddApplicationInsightsTelemetry(options => 
-    {
-        options.ConnectionString = appInsightsConnectionString;
-    });
-}
+// We're not using server-side Application Insights here
+// For Blazor WebAssembly, Application Insights is configured via JavaScript
+// The connection string is still in appsettings.json for reference
+// but will be used in index.html or a JavaScript initializer
 
 // Register services
 // builder.Services.AddScoped<IProjectService, ProjectService>();
