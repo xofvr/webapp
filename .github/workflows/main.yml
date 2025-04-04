@@ -19,13 +19,13 @@ jobs:
         dotnet-version: 8.0.x
     
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore FarhanS.Portfolio/FarhanS.Portfolio.sln
     
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build FarhanS.Portfolio/FarhanS.Portfolio.sln --no-restore
     
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test FarhanS.Portfolio/FarhanS.Portfolio.sln --no-build --verbosity normal
   
   docker-build-and-push:
     needs: build-and-test
@@ -48,7 +48,7 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v4
       with:
-        context: .
-        file: src/Web/Dockerfile
+        context: ./FarhanS.Portfolio
+        file: ./FarhanS.Portfolio/src/Web/Dockerfile
         push: true
         tags: ghcr.io/${{ github.repository_owner }}/portfolio:latest
