@@ -28,6 +28,12 @@ jobs:
           submodules: true
           lfs: false
       
+      # Setup .NET SDK
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '8.0.x'
+      
       # Set up Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -56,7 +62,7 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"  # Explicitly set the deployment action
-          app_location: "/FarhanS.Portfolio/src/Web"
+          app_location: "FarhanS.Portfolio/src/Web"  # Removed leading slash
           api_location: ""
           output_location: "wwwroot"
           skip_deploy_on_missing_secrets: true  # Continue workflow even if token is missing
@@ -64,9 +70,9 @@ jobs:
           # and use the publish output instead
           skip_app_build: true
           app_build_command: |
-            dotnet restore FarhanS.Portfolio/src/Web/FarhanS.Portfolio.csproj
-            dotnet build FarhanS.Portfolio/src/Web/FarhanS.Portfolio.csproj -c Release
-            dotnet publish FarhanS.Portfolio/src/Web/FarhanS.Portfolio.csproj -c Release -o publish
+            dotnet restore ./FarhanS.Portfolio/src/Web/FarhanS.Portfolio.csproj
+            dotnet build ./FarhanS.Portfolio/src/Web/FarhanS.Portfolio.csproj -c Release
+            dotnet publish ./FarhanS.Portfolio/src/Web/FarhanS.Portfolio.csproj -c Release -o ./publish
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
