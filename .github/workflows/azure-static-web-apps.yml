@@ -36,8 +36,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: ./webapp/FarhanS.Portfolio
-          file: ./webapp/FarhanS.Portfolio/src/Web/Dockerfile
+          context: ./FarhanS.Portfolio
+          file: ./FarhanS.Portfolio/src/Web/Dockerfile
           push: true
           tags: ghcr.io/xofvr/portfolio:latest
       
