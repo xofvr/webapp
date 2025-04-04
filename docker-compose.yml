@@ -3,14 +3,14 @@ version: '3.8'
 services:
   webapp:
     build:
-      context: .
+      context: ./FarhanS.Portfolio
       dockerfile: src/Web/Dockerfile
     ports:
-      - "5000:80"
+      - "8080:80"
     depends_on:
       - db
     environment:
-      - ConnectionStrings__DefaultConnection=Server=db;Database=portfolio;User=root;Password=passoword;
+      - ConnectionStrings__DefaultConnection=Server=db;Database=portfolio;User=root;Password=password;
     networks:
       - portfolio-network
 
