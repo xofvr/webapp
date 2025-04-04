@@ -39,7 +39,7 @@ jobs:
           context: ./FarhanS.Portfolio
           file: ./FarhanS.Portfolio/src/Web/Dockerfile
           push: true
-          tags: ghcr.io/xofvr/portfolio:latest
+          tags: ghcr.io/${{ github.repository_owner }}/portfolio:latest
       
       - name: Build And Deploy
         id: builddeploy
