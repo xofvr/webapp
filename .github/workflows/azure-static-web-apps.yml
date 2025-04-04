@@ -9,6 +9,14 @@ on:
     branches:
       - main
 
+# Add permissions block to allow package writes
+permissions:
+  contents: read
+  packages: write
+  # Add this for Azure Static Web Apps deployment
+  pull-requests: write
+  statuses: write
+
 jobs:
   build_and_deploy_job:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')

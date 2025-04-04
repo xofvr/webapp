@@ -5,6 +5,7 @@ services:
     build:
       context: ./FarhanS.Portfolio
       dockerfile: src/Web/Dockerfile
+    platform: linux/arm64  # Optimized for M1 Mac
     ports:
       - "8080:80"
     depends_on:
@@ -13,10 +14,19 @@ services:
       - ConnectionStrings__DefaultConnection=Server=db;Database=portfolio;User=root;Password=password;
     networks:
       - portfolio-network
+    # Add restart policy for production-like behavior
+    restart: unless-stopped
+    # Add healthcheck
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   db:
     image: mysql:8.0
-    platform: linux/amd64 # Specify platform for M1 compatibility
+    platform: linux/arm64  # Optimized for M1 Mac
     ports:
       - "3306:3306"
     environment:
@@ -27,9 +37,17 @@ services:
       - ./sql-init:/docker-entrypoint-initdb.d
     networks:
       - portfolio-network
+    # Add healthcheck for MySQL
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
 
 networks:
   portfolio-network:
+    driver: bridge
 
 volumes:
   mysql-data:

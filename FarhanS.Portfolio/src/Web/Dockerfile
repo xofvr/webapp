@@ -1,19 +1,38 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["FarhanS.Portfolio/src/Web/FarhanS.Portfolio.csproj", "Web/"]
+
+# Copy csproj files first and restore as distinct layers to take advantage of Docker caching
 COPY ["FarhanS.Portfolio/src/Core/Core.csproj", "Core/"]
 COPY ["FarhanS.Portfolio/src/Infrastructure/Infrastructure.csproj", "Infrastructure/"]
+COPY ["FarhanS.Portfolio/src/Web/FarhanS.Portfolio.csproj", "Web/"]
+
+# Restore packages
 RUN dotnet restore "Web/FarhanS.Portfolio.csproj"
+
+# Copy the remaining source code
 COPY FarhanS.Portfolio/src .
+
+# Build and publish
 WORKDIR "/src/Web"
 RUN dotnet build "FarhanS.Portfolio.csproj" -c Release -o /app/build
-
-FROM build AS publish
 RUN dotnet publish "FarhanS.Portfolio.csproj" -c Release -o /app/publish
 
+# Create final image
 FROM nginx:alpine AS final
 WORKDIR /usr/share/nginx/html
-COPY --from=publish /app/publish/wwwroot .
+
+# Configure nginx for Blazor WebAssembly
 COPY FarhanS.Portfolio/src/Web/nginx.conf /etc/nginx/nginx.conf
+
+# Copy published app
+COPY --from=build /app/publish/wwwroot .
+
+# Add proper MIME types for Blazor WebAssembly
+RUN echo "application/wasm wasm" >> /etc/nginx/mime.types
+
+# Expose ports
 EXPOSE 80
 EXPOSE 443
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s CMD wget --quiet --tries=1 --spider http://localhost:80/ || exit 1
