@@ -59,6 +59,7 @@ jobs:
           app_location: "/FarhanS.Portfolio/src/Web"
           api_location: ""
           output_location: "wwwroot"
+          skip_deploy_on_missing_secrets: true  # Continue workflow even if token is missing
           # For Blazor WebAssembly apps, we need to disable the default Azure action's build step
           # and use the publish output instead
           skip_app_build: true
@@ -78,3 +79,4 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           action: "close"
+          skip_deploy_on_missing_secrets: true  # Continue workflow even if token is missing
