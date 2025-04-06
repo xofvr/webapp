@@ -54,6 +54,14 @@ jobs:
           # Set environment-specific variables
           ENVIRONMENT_NAME=${{ github.ref == 'refs/heads/main' && 'Production' || 'Staging' }}
           echo "Building for $ENVIRONMENT_NAME environment"
+          
+          # Modify appsettings.Staging.json to use the correct API URL when running in staging
+          if [ "$ENVIRONMENT_NAME" = "Staging" ]; then
+            echo "Configuring staging API endpoints"
+            # Use the correct staging API endpoint or fallback to production if needed
+            sed -i 's|"ApiBaseUrl": "https://staging-api.farhans-portfolio.com"|"ApiBaseUrl": "https://api.farhans-portfolio.com"|g' ./FarhanS.Portfolio/src/Web/wwwroot/appsettings.Staging.json
+          fi
+          
           # Use separate appsettings files for different environments
           dotnet build ./FarhanS.Portfolio/src/Web/FarhanS.Portfolio.csproj -c Release -p:Configuration=Release -p:EnvironmentName=$ENVIRONMENT_NAME
           dotnet publish ./FarhanS.Portfolio/src/Web/FarhanS.Portfolio.csproj -c Release -p:Configuration=Release -p:EnvironmentName=$ENVIRONMENT_NAME -o ./publish
@@ -95,8 +103,8 @@ jobs:
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
-          # Use environment secrets to access tokens - environments are defined in GitHub repository settings
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          # Use the correct token names that match your GitHub secrets
+          azure_static_web_apps_api_token: ${{ github.ref == 'refs/heads/main' && secrets.AZURE_STATIC_WEB_APPS_API_TOKEN || secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_STAGING }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           # Point app_location to the root directory since we're using a pre-built app
@@ -118,7 +126,7 @@ jobs:
         id: closepullrequest
         uses: Azure/static-web-apps-deploy@v1
         with:
-          # Use environment-specific token via GitHub environments
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          # Use the correct token names that match your GitHub secrets
+          azure_static_web_apps_api_token: ${{ github.base_ref == 'main' && secrets.AZURE_STATIC_WEB_APPS_API_TOKEN || secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_STAGING }}
           action: "close"
           skip_deploy_on_missing_secrets: true

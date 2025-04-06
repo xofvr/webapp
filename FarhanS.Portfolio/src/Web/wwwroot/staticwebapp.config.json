@@ -56,16 +56,13 @@
     },
     {
       "route": "/*",
-      "headers": {
-        "cache-control": "no-cache, no-store, must-revalidate"
-      },
       "serve": "/index.html",
       "statusCode": 200
     }
   ],
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["/images/*.{png,jpg,gif}", "/css/*", "/_framework/*"]
+    "exclude": ["/images/*.{png,jpg,gif}", "/css/*", "/js/*", "/_framework/*"]
   },
   "responseOverrides": {
     "404": {
@@ -83,5 +80,11 @@
     ".json": "application/json",
     ".wasm": "application/wasm",
     ".webmanifest": "application/manifest+json"
+  },
+  "networking": {
+    "allowedIpRanges": ["any"]
+  },
+  "platform": {
+    "apiRuntime": "dotnet:8.0"
   }
 }
