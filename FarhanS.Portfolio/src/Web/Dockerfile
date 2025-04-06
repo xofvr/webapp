@@ -2,15 +2,15 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copy csproj files first and restore as distinct layers to take advantage of Docker caching
-COPY ["FarhanS.Portfolio/src/Core/Core.csproj", "Core/"]
-COPY ["FarhanS.Portfolio/src/Infrastructure/Infrastructure.csproj", "Infrastructure/"]
-COPY ["FarhanS.Portfolio/src/Web/FarhanS.Portfolio.csproj", "Web/"]
+COPY ["src/Core/Core.csproj", "Core/"]
+COPY ["src/Infrastructure/Infrastructure.csproj", "Infrastructure/"]
+COPY ["src/Web/FarhanS.Portfolio.csproj", "Web/"]
 
 # Restore packages
 RUN dotnet restore "Web/FarhanS.Portfolio.csproj"
 
 # Copy the remaining source code
-COPY FarhanS.Portfolio/src .
+COPY src .
 
 # Build and publish
 WORKDIR "/src/Web"
@@ -22,13 +22,13 @@ FROM nginx:alpine AS final
 WORKDIR /usr/share/nginx/html
 
 # Configure nginx for Blazor WebAssembly
-COPY FarhanS.Portfolio/src/Web/nginx.conf /etc/nginx/nginx.conf
+COPY src/Web/nginx.conf /etc/nginx/nginx.conf
 
 # Copy published app
 COPY --from=build /app/publish/wwwroot .
 
-# Add proper MIME types for Blazor WebAssembly
-RUN echo "application/wasm wasm" >> /etc/nginx/mime.types
+# Add proper MIME types for Blazor WebAssembly - fixed to use correct format
+RUN sed -i 's/\(^.*types {\s*$\)/\1\n    application\/wasm wasm;/g' /etc/nginx/mime.types
 
 # Expose ports
 EXPOSE 80
