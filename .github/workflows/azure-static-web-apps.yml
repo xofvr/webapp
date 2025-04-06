@@ -50,21 +50,32 @@ jobs:
       # Build Blazor WebAssembly app with environment-specific appsettings.json
       - name: Build Blazor WebAssembly App
         run: |
+          echo "Starting build process for branch: ${{ github.ref }}"
           dotnet restore ./FarhanS.Portfolio/src/Web/FarhanS.Portfolio.csproj
           # Set environment-specific variables
           ENVIRONMENT_NAME=${{ github.ref == 'refs/heads/main' && 'Production' || 'Staging' }}
           echo "Building for $ENVIRONMENT_NAME environment"
           
-          # Modify appsettings.Staging.json to use the correct API URL when running in staging
+          # Check if staging settings file exists
           if [ "$ENVIRONMENT_NAME" = "Staging" ]; then
-            echo "Configuring staging API endpoints"
-            # Use the correct staging API endpoint or fallback to production if needed
-            sed -i 's|"ApiBaseUrl": "https://staging-api.farhans-portfolio.com"|"ApiBaseUrl": "https://api.farhans-portfolio.com"|g' ./FarhanS.Portfolio/src/Web/wwwroot/appsettings.Staging.json
+            echo "Configuring staging environment"
+            if [ -f "./FarhanS.Portfolio/src/Web/wwwroot/appsettings.Staging.json" ]; then
+              echo "Using existing appsettings.Staging.json"
+            else
+              echo "Creating appsettings.Staging.json from production settings"
+              cp ./FarhanS.Portfolio/src/Web/wwwroot/appsettings.json ./FarhanS.Portfolio/src/Web/wwwroot/appsettings.Staging.json
+            fi
           fi
           
           # Use separate appsettings files for different environments
           dotnet build ./FarhanS.Portfolio/src/Web/FarhanS.Portfolio.csproj -c Release -p:Configuration=Release -p:EnvironmentName=$ENVIRONMENT_NAME
           dotnet publish ./FarhanS.Portfolio/src/Web/FarhanS.Portfolio.csproj -c Release -p:Configuration=Release -p:EnvironmentName=$ENVIRONMENT_NAME -o ./publish
+          
+          # Debug output
+          echo "Published files in ./publish directory:"
+          ls -la ./publish
+          echo "Published files in ./publish/wwwroot directory:"
+          ls -la ./publish/wwwroot
       
       # Run unit tests
       - name: Run Unit Tests
@@ -82,11 +93,11 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
       
-      # Build and push Docker image with proper tags and labels
+      # Fixed Docker build context and file path
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: .
+          context: ./FarhanS.Portfolio
           file: ./FarhanS.Portfolio/src/Web/Dockerfile
           push: true
           tags: |
