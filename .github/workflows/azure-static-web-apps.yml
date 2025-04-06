@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - main
+      - develop
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
       - main
+      - develop
 
 # Add permissions block to allow package writes
 permissions:
@@ -22,6 +24,8 @@ jobs:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     name: Build and Deploy Job
+    # Define environment based on branch - this helps manage environment-specific secrets
+    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -30,16 +34,52 @@ jobs:
       
       # Setup .NET SDK
       - name: Setup .NET
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'
       
-      # Build Blazor WebAssembly app
+      # Add caching for NuGet packages to speed up builds
+      - name: Cache NuGet packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+      
+      # Build Blazor WebAssembly app with environment-specific appsettings.json
       - name: Build Blazor WebAssembly App
         run: |
+          echo "Starting build process for branch: ${{ github.ref }}"
           dotnet restore ./FarhanS.Portfolio/src/Web/FarhanS.Portfolio.csproj
-          dotnet build ./FarhanS.Portfolio/src/Web/FarhanS.Portfolio.csproj -c Release
-          dotnet publish ./FarhanS.Portfolio/src/Web/FarhanS.Portfolio.csproj -c Release -o ./publish
+          # Set environment-specific variables
+          ENVIRONMENT_NAME=${{ github.ref == 'refs/heads/main' && 'Production' || 'Staging' }}
+          echo "Building for $ENVIRONMENT_NAME environment"
+          
+          # Check if staging settings file exists
+          if [ "$ENVIRONMENT_NAME" = "Staging" ]; then
+            echo "Configuring staging environment"
+            if [ -f "./FarhanS.Portfolio/src/Web/wwwroot/appsettings.Staging.json" ]; then
+              echo "Using existing appsettings.Staging.json"
+            else
+              echo "Creating appsettings.Staging.json from production settings"
+              cp ./FarhanS.Portfolio/src/Web/wwwroot/appsettings.json ./FarhanS.Portfolio/src/Web/wwwroot/appsettings.Staging.json
+            fi
+          fi
+          
+          # Use separate appsettings files for different environments
+          dotnet build ./FarhanS.Portfolio/src/Web/FarhanS.Portfolio.csproj -c Release -p:Configuration=Release -p:EnvironmentName=$ENVIRONMENT_NAME
+          dotnet publish ./FarhanS.Portfolio/src/Web/FarhanS.Portfolio.csproj -c Release -p:Configuration=Release -p:EnvironmentName=$ENVIRONMENT_NAME -o ./publish
+          
+          # Debug output
+          echo "Published files in ./publish directory:"
+          ls -la ./publish
+          echo "Published files in ./publish/wwwroot directory:"
+          ls -la ./publish/wwwroot
+      
+      # Run unit tests
+      - name: Run Unit Tests
+        run: dotnet test ./FarhanS.Portfolio/tests/UnitTests/UnitTests.csproj --configuration Release --no-build
       
       # Set up Docker Buildx
       - name: Set up Docker Buildx
@@ -53,38 +93,51 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
       
-      # Build and push Docker image
+      # Fixed Docker build context and file path
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: .
+          context: ./FarhanS.Portfolio
           file: ./FarhanS.Portfolio/src/Web/Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/portfolio:latest
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/portfolio:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/portfolio:${{ github.ref == 'refs/heads/main' && 'latest' || 'staging' }}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.created=${{ github.event.repository.updated_at }}
+            org.opencontainers.image.version=${{ github.ref_name }}
       
+      # Deploy to the appropriate Azure Static Web App environment based on branch
       - name: Deploy to Azure Static Web Apps
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
+          # Use a single API token for both environments
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           # Point app_location to the root directory since we're using a pre-built app
           app_location: "./publish/wwwroot"
           api_location: ""
-          # No need for output_location as we're directly pointing to the built artifacts
           output_location: ""
           skip_app_build: true
+          # Set the deployment environment (production or staging)
+          deployment_environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
     name: Close Pull Request Job
+    # Use the target environment of the PR
+    environment: ${{ github.base_ref == 'main' && 'production' || 'staging' }}
     steps:
       - name: Close Pull Request
         id: closepullrequest
         uses: Azure/static-web-apps-deploy@v1
         with:
+          # Use a single API token for both environments
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           action: "close"
           skip_deploy_on_missing_secrets: true
