@@ -9,13 +9,11 @@ on:
     types: [opened, synchronize, reopened, closed]
     branches:
       - main
-      - develop
 
 # Add permissions block to allow package writes
 permissions:
   contents: read
   packages: write
-  # Add this for Azure Static Web Apps deployment
   pull-requests: write
   statuses: write
 
@@ -24,7 +22,6 @@ jobs:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     name: Build and Deploy Job
-    # Define environment based on branch - this helps manage environment-specific secrets
     environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
     steps:
       - uses: actions/checkout@v3
@@ -32,13 +29,23 @@ jobs:
           submodules: true
           lfs: false
       
+      # Debug information for troubleshooting
+      - name: Debug Deployment Context
+        run: |
+          echo "Event: ${{ github.event_name }}"
+          echo "Ref: ${{ github.ref }}"
+          echo "Base Ref: ${{ github.base_ref }}"
+          echo "Head Ref: ${{ github.head_ref }}"
+          echo "Repository: ${{ github.repository }}"
+          echo "Deployment target: ${{ github.ref == 'refs/heads/main' && 'Production (main)' || (github.ref == 'refs/heads/develop' && 'Staging (develop)' || 'PR Preview') }}"
+      
       # Setup .NET SDK
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'
       
-      # Add caching for NuGet packages to speed up builds
+      # Cache NuGet packages
       - name: Cache NuGet packages
         uses: actions/cache@v3
         with:
@@ -47,33 +54,35 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
       
-      # Build Blazor WebAssembly app with environment-specific appsettings.json
+      # Build Blazor WebAssembly app
       - name: Build Blazor WebAssembly App
         run: |
-          echo "Starting build process for branch: ${{ github.ref }}"
-          dotnet restore ./FarhanS.Portfolio/src/Web/FarhanS.Portfolio.csproj
-          # Set environment-specific variables
-          ENVIRONMENT_NAME=${{ github.ref == 'refs/heads/main' && 'Production' || 'Staging' }}
-          echo "Building for $ENVIRONMENT_NAME environment"
-          
-          # Check if staging settings file exists
-          if [ "$ENVIRONMENT_NAME" = "Staging" ]; then
-            echo "Configuring staging environment"
-            if [ -f "./FarhanS.Portfolio/src/Web/wwwroot/appsettings.Staging.json" ]; then
-              echo "Using existing appsettings.Staging.json"
-            else
-              echo "Creating appsettings.Staging.json from production settings"
-              cp ./FarhanS.Portfolio/src/Web/wwwroot/appsettings.json ./FarhanS.Portfolio/src/Web/wwwroot/appsettings.Staging.json
-            fi
+          # Determine environment based on branch or PR
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            ENVIRONMENT_NAME="Staging"
+            echo "Building for Staging environment (PR)"
+          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            ENVIRONMENT_NAME="Production"
+            echo "Building for Production environment (main)"
+          else
+            ENVIRONMENT_NAME="Staging"
+            echo "Building for Staging environment (develop)"
           fi
           
-          # Use separate appsettings files for different environments
+          echo "Starting build process for $ENVIRONMENT_NAME"
+          dotnet restore ./FarhanS.Portfolio/src/Web/FarhanS.Portfolio.csproj
+          
+          # Handle environment-specific appsettings
+          if [[ "$ENVIRONMENT_NAME" == "Staging" && ! -f "./FarhanS.Portfolio/src/Web/wwwroot/appsettings.Staging.json" ]]; then
+            echo "Creating appsettings.Staging.json from production settings"
+            cp ./FarhanS.Portfolio/src/Web/wwwroot/appsettings.json ./FarhanS.Portfolio/src/Web/wwwroot/appsettings.Staging.json
+          fi
+          
+          # Build and publish
           dotnet build ./FarhanS.Portfolio/src/Web/FarhanS.Portfolio.csproj -c Release -p:Configuration=Release -p:EnvironmentName=$ENVIRONMENT_NAME
           dotnet publish ./FarhanS.Portfolio/src/Web/FarhanS.Portfolio.csproj -c Release -p:Configuration=Release -p:EnvironmentName=$ENVIRONMENT_NAME -o ./publish
           
-          # Debug output
-          echo "Published files in ./publish directory:"
-          ls -la ./publish
+          # List published files for verification
           echo "Published files in ./publish/wwwroot directory:"
           ls -la ./publish/wwwroot
       
@@ -93,8 +102,8 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
       
-      # Fixed Docker build context and file path
-      - name: Build and push
+      # Build and push Docker image
+      - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
           context: ./FarhanS.Portfolio
@@ -109,35 +118,56 @@ jobs:
             org.opencontainers.image.created=${{ github.event.repository.updated_at }}
             org.opencontainers.image.version=${{ github.ref_name }}
       
-      # Deploy to the appropriate Azure Static Web App environment based on branch
+      # Set deployment environment based on context
+      - name: Set Deployment Environment
+        id: set_env
+        run: |
+          # For PR: use PR-specific environment name
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "DEPLOY_ENV=pr-${{ github.event.number }}" >> $GITHUB_ENV
+            echo "Setting PR preview environment: pr-${{ github.event.number }}"
+          
+          # For main branch: use production environment (empty string)
+          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "DEPLOY_ENV=" >> $GITHUB_ENV
+            echo "Setting production environment (main branch)"
+          
+          # For develop branch: use a named environment
+          elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+            echo "DEPLOY_ENV=staging" >> $GITHUB_ENV
+            echo "Setting staging environment (develop branch)"
+          
+          # For other branches: use branch name
+          else
+            BRANCH_NAME=$(echo "${{ github.ref }}" | sed 's/refs\/heads\///')
+            echo "DEPLOY_ENV=$BRANCH_NAME" >> $GITHUB_ENV
+            echo "Setting branch-specific environment: $BRANCH_NAME"
+          fi
+      
+      # Deploy to Azure Static Web Apps
       - name: Deploy to Azure Static Web Apps
-        id: builddeploy
+        id: deploy
         uses: Azure/static-web-apps-deploy@v1
         with:
-          # Use a single API token for both environments
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          # Point app_location to the root directory since we're using a pre-built app
           app_location: "./publish/wwwroot"
           api_location: ""
           output_location: ""
           skip_app_build: true
-          # Set the deployment environment - use empty string for main branch to use default production environment
-          deployment_environment: ${{ github.ref == 'refs/heads/main' && '' || 'staging' }}
+          deployment_environment: ${{ env.DEPLOY_ENV }}
+          verbose: true
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
     name: Close Pull Request Job
-    # Use the target environment of the PR
-    environment: ${{ github.base_ref == 'main' && 'production' || 'staging' }}
     steps:
       - name: Close Pull Request
         id: closepullrequest
         uses: Azure/static-web-apps-deploy@v1
         with:
-          # Use a single API token for both environments
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           action: "close"
-          skip_deploy_on_missing_secrets: true
+          deployment_environment: pr-${{ github.event.number }}
