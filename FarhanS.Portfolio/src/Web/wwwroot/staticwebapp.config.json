@@ -82,7 +82,7 @@
     ".webmanifest": "application/manifest+json"
   },
   "networking": {
-    "allowedIpRanges": ["any"]
+    "allowedIpRanges": ["0.0.0.0/0"]
   },
   "platform": {
     "apiRuntime": "dotnet:8.0"
