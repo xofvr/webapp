@@ -13,16 +13,6 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 // Configure detailed logging for better error diagnosis
 builder.Logging.SetMinimumLevel(LogLevel.Warning);
 
-// In development/staging, add more detailed logging
-if (!builder.HostEnvironment.IsProduction())
-{
-    builder.Logging.AddBrowserConsole(options =>
-    {
-        options.IncludeScopes = true;
-        options.MaxBatchSize = 1; // Ensure logs are displayed immediately
-    });
-}
-
 // Log initialization info to help with debugging
 Console.WriteLine($"Blazor WebAssembly initializing. Environment: {builder.HostEnvironment.Environment}");
 Console.WriteLine($"Base Address: {builder.HostEnvironment.BaseAddress}");
