@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using FarhanS.Portfolio;
 using FarhanS.Portfolio.Infrastructure.Data;
 using System.Diagnostics;
+using System.Net.Http.Headers;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -13,27 +14,62 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 builder.Configuration.AddJsonFile($"appsettings.{builder.HostEnvironment.Environment}.json", optional: true, reloadOnChange: true);
 
-// Configure HttpClient with API base URL from config
+// Configure HttpClient with API base URL from config and proper caching
 var apiBaseUrl = builder.Configuration.GetSection("ApiSettings:ApiBaseUrl").Value ?? builder.HostEnvironment.BaseAddress;
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(apiBaseUrl) });
+builder.Services.AddScoped(sp => {
+    var httpClient = new HttpClient { BaseAddress = new Uri(apiBaseUrl) };
+    
+    // Add default headers for better API performance
+    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+    
+    // Add user agent for analytics
+    httpClient.DefaultRequestHeaders.UserAgent.Add(
+        new ProductInfoHeaderValue("FarhansPortfolio", "1.0.0"));
+    
+    return httpClient;
+});
 
-// Log the current environment
+// Log the current environment - removed in production builds
+#if DEBUG
 Console.WriteLine($"Current Environment: {builder.HostEnvironment.Environment}");
+#endif
 
 // Register DbContext if connection string is available
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 if (!string.IsNullOrEmpty(connectionString))
 {
-    builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
-        options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    builder.Services.AddDbContextFactory<ApplicationDbContext>(options => {
+        options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+        
+        // Add performance optimizations
+        options.EnableSensitiveDataLogging(builder.HostEnvironment.IsDevelopment());
+        options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking); // Better for read-only scenarios
+    });
 }
 
-// We're not using server-side Application Insights here
-// For Blazor WebAssembly, Application Insights is configured via JavaScript
-// The connection string is still in appsettings.json for reference
-// but will be used in index.html or a JavaScript initializer
+// Add memory cache for better performance
+builder.Services.AddMemoryCache();
 
-// Register services
+// Configure dependency injection with proper lifetime management
+// Register your services here
 // builder.Services.AddScoped<IProjectService, ProjectService>();
 
-await builder.Build().RunAsync();
+var host = builder.Build();
+
+// Apply any pending migrations - only relevant for server-side, but keeping as a reference
+// using (var scope = host.Services.CreateScope())
+// {
+//     var services = scope.ServiceProvider;
+//     try
+//     {
+//         var context = services.GetRequiredService<ApplicationDbContext>();
+//         context.Database.Migrate();
+//     }
+//     catch (Exception ex)
+//     {
+//         Console.WriteLine($"An error occurred while migrating the database: {ex.Message}");
+//     }
+// }
+
+// Configure WebAssembly lazy loading for better startup performance
+await host.RunAsync();

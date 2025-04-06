@@ -6,6 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FarhanS.Portfolio</title>
     <base href="/" />
+    
+    <!-- Add preloading for critical resources -->
+    <link rel="preload" href="_framework/blazor.webassembly.js" as="script" />
+    <link rel="preload" href="css/app.css" as="style" />
+    
+    <!-- Add DNS prefetch for external resources -->
+    <link rel="dns-prefetch" href="https://js.monitor.azure.com" />
+    
+    <!-- Standard stylesheets -->
     <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/app.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
@@ -49,12 +58,26 @@
         <a href="." class="reload">Reload</a>
         <span class="dismiss">🗙</span>
     </div>
-    <script src="_framework/blazor.webassembly.js"></script>
-    <script>navigator.serviceWorker.register('service-worker.js');</script>
+    
+    <!-- Add defer to improve page load performance -->
+    <script src="_framework/blazor.webassembly.js" defer></script>
+    <script>
+        // Register service worker after page load
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(function(registration) {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
     
     <!-- Configure Application Insights using the connection string from appsettings -->
     <script>
-        // This script dynamically sets the Application Insights connection string from appsettings
         (async function () {
             try {
                 // Fetch the connection string from appsettings based on environment
