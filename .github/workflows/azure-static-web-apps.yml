@@ -123,8 +123,8 @@ jobs:
           api_location: ""
           output_location: ""
           skip_app_build: true
-          # Set the deployment environment (production or staging)
-          deployment_environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+          # Set the deployment environment - use empty string for main branch to use default production environment
+          deployment_environment: ${{ github.ref == 'refs/heads/main' && '' || 'staging' }}
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
