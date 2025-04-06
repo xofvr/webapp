@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Diagnostic Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2rem;
+            line-height: 1.6;
+        }
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        h1 { color: #333; }
+        h2 { color: #555; }
+        .success { color: green; }
+        .error { color: red; }
+        button {
+            padding: 0.5rem 1rem;
+            background-color: #0366d6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #apiStatus, #configStatus, #envStatus {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Static Web App Diagnostic Page</h1>
+    <p>This page runs without Blazor to diagnose deployment issues.</p>
+    
+    <div class="card">
+        <h2>Environment Information</h2>
+        <p>URL: <span id="currentUrl"></span></p>
+        <p>Environment: <span id="envStatus">Checking...</span></p>
+    </div>
+    
+    <div class="card">
+        <h2>Configuration Check</h2>
+        <p>appsettings.json: <span id="configStatus">Checking...</span></p>
+        <button onclick="checkConfig()">Check Configuration</button>
+    </div>
+    
+    <div class="card">
+        <h2>API Connection Test</h2>
+        <p>API Status: <span id="apiStatus">Not tested</span></p>
+        <button onclick="testApi()">Test API Connection</button>
+    </div>
+    
+    <div class="card">
+        <h2>Static Resources</h2>
+        <p>Blazor Resources: <span id="resourceStatus">Checking...</span></p>
+        <button onclick="checkResources()">Check Resources</button>
+    </div>
+
+    <script>
+        // Display current URL
+        document.getElementById("currentUrl").textContent = window.location.href;
+        
+        // Determine environment from URL
+        const url = window.location.href;
+        let env = "Unknown";
+        if (url.includes("-staging.")) {
+            env = "Staging";
+        } else if (url.includes("localhost")) {
+            env = "Local Development";
+        } else {
+            env = "Production";
+        }
+        document.getElementById("envStatus").textContent = env;
+        
+        // Function to check configuration
+        async function checkConfig() {
+            try {
+                const configStatus = document.getElementById("configStatus");
+                configStatus.textContent = "Checking...";
+                
+                const response = await fetch('appsettings.json');
+                if (response.ok) {
+                    const data = await response.json();
+                    configStatus.textContent = "Found and valid";
+                    configStatus.className = "success";
+                    
+                    // Check if staging config exists
+                    if (env === "Staging") {
+                        try {
+                            const stagingResponse = await fetch('appsettings.Staging.json');
+                            if (stagingResponse.ok) {
+                                configStatus.textContent += " (appsettings.Staging.json also found)";
+                            }
+                        } catch (e) {
+                            // Staging config not found, but that's okay
+                        }
+                    }
+                } else {
+                    configStatus.textContent = "Not found or invalid";
+                    configStatus.className = "error";
+                }
+            } catch (error) {
+                document.getElementById("configStatus").textContent = "Error: " + error.message;
+                document.getElementById("configStatus").className = "error";
+            }
+        }
+        
+        // Function to test API connection
+        async function testApi() {
+            try {
+                const apiStatus = document.getElementById("apiStatus");
+                apiStatus.textContent = "Testing...";
+                
+                // Get API base URL from config
+                let apiBaseUrl = "";
+                try {
+                    const configResponse = await fetch('appsettings.json');
+                    if (configResponse.ok) {
+                        const config = await configResponse.json();
+                        apiBaseUrl = config.ApiSettings?.ApiBaseUrl || "";
+                        
+                        // Check for staging-specific config
+                        if (env === "Staging") {
+                            try {
+                                const stagingConfigResponse = await fetch('appsettings.Staging.json');
+                                if (stagingConfigResponse.ok) {
+                                    const stagingConfig = await stagingConfigResponse.json();
+                                    if (stagingConfig.ApiSettings?.ApiBaseUrl) {
+                                        apiBaseUrl = stagingConfig.ApiSettings.ApiBaseUrl;
+                                    }
+                                }
+                            } catch (e) {
+                                // Use the default if staging config not found
+                            }
+                        }
+                    }
+                } catch (e) {
+                    // Config error, will try with empty base URL
+                }
+                
+                if (!apiBaseUrl) {
+                    apiStatus.textContent = "No API base URL found in configuration";
+                    apiStatus.className = "error";
+                    return;
+                }
+                
+                // Try to connect to API
+                const testEndpoint = apiBaseUrl.endsWith('/') ? `${apiBaseUrl}health` : `${apiBaseUrl}/health`;
+                apiStatus.textContent = `Testing connection to ${testEndpoint}`;
+                
+                const response = await fetch(testEndpoint, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    apiStatus.textContent = `Connected successfully to ${apiBaseUrl}`;
+                    apiStatus.className = "success";
+                } else {
+                    apiStatus.textContent = `Error connecting to API: ${response.status} ${response.statusText}`;
+                    apiStatus.className = "error";
+                }
+            } catch (error) {
+                document.getElementById("apiStatus").textContent = "Error: " + error.message;
+                document.getElementById("apiStatus").className = "error";
+            }
+        }
+        
+        // Function to check Blazor resources
+        async function checkResources() {
+            try {
+                const resourceStatus = document.getElementById("resourceStatus");
+                resourceStatus.textContent = "Checking...";
+                
+                const resources = [
+                    '/_framework/blazor.webassembly.js',
+                    '/_framework/blazor.boot.json',
+                    '/_framework/dotnet.wasm'
+                ];
+                
+                let allGood = true;
+                let details = "";
+                
+                for (const resource of resources) {
+                    try {
+                        const response = await fetch(resource, { method: 'HEAD' });
+                        if (!response.ok) {
+                            allGood = false;
+                            details += `${resource}: ${response.status} ${response.statusText}\n`;
+                        }
+                    } catch (e) {
+                        allGood = false;
+                        details += `${resource}: ${e.message}\n`;
+                    }
+                }
+                
+                if (allGood) {
+                    resourceStatus.textContent = "All Blazor resources found";
+                    resourceStatus.className = "success";
+                } else {
+                    resourceStatus.textContent = "Some resources missing or invalid";
+                    resourceStatus.className = "error";
+                    console.error("Resource check details:", details);
+                }
+            } catch (error) {
+                document.getElementById("resourceStatus").textContent = "Error: " + error.message;
+                document.getElementById("resourceStatus").className = "error";
+            }
+        }
+        
+        // Auto-run checks when page loads
+        window.onload = function() {
+            checkConfig();
+            checkResources();
+        };
+    </script>
+</body>
+</html>
