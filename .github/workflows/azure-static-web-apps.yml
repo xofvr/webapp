@@ -114,7 +114,7 @@ jobs:
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
-          # Use a single API token for both environments
+          # Use a single API token for both environments since it's the same Static Web App resource
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
@@ -123,21 +123,21 @@ jobs:
           api_location: ""
           output_location: ""
           skip_app_build: true
-          # Set the deployment environment - use empty string for main branch to use default production environment
-          deployment_environment: ${{ github.ref == 'refs/heads/main' && '' || 'staging' }}
+          # For main branch, use empty string (default production environment)
+          # For develop branch or PRs, use the branch name as the environment name
+          deployment_environment: ${{ github.ref == 'refs/heads/main' ? '' : (github.event_name == 'pull_request' ? format('pr{0}', github.event.number) : github.ref_name) }}
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
     name: Close Pull Request Job
-    # Use the target environment of the PR
-    environment: ${{ github.base_ref == 'main' && 'production' || 'staging' }}
     steps:
       - name: Close Pull Request
         id: closepullrequest
         uses: Azure/static-web-apps-deploy@v1
         with:
-          # Use a single API token for both environments
+          # Use a single API token since it's the same Static Web App resource
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           action: "close"
-          skip_deploy_on_missing_secrets: true
+          # Use PR number for the environment name when closing
+          deployment_environment: ${{ format('pr{0}', github.event.number) }}
