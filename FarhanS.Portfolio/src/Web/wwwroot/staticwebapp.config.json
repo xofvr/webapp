@@ -66,6 +66,11 @@
       "allowedRoles": ["anonymous"]
     },
     {
+      "route": "/error",
+      "serve": "/diagnostics.html",
+      "statusCode": 200
+    },
+    {
       "route": "/*",
       "serve": "/index.html",
       "statusCode": 200
@@ -76,12 +81,20 @@
     "exclude": ["/images/*.{png,jpg,gif}", "/css/*", "/js/*", "/_framework/*", "/diagnostics.html"]
   },
   "responseOverrides": {
-    "404": {
-      "rewrite": "/index.html",
+    "400": {
+      "rewrite": "/diagnostics.html",
       "statusCode": 200
     },
-    "500": {
+    "401": {
       "rewrite": "/diagnostics.html",
+      "statusCode": 200
+    },
+    "403": {
+      "rewrite": "/diagnostics.html",
+      "statusCode": 200
+    },
+    "404": {
+      "rewrite": "/index.html",
       "statusCode": 200
     }
   },
