@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.EntityFrameworkCore;
 using FarhanS.Portfolio;
 using FarhanS.Portfolio.Infrastructure.Data;
+using FarhanS.Portfolio.Web;
+using FarhanS.Portfolio.Web.Services;
 using System.Diagnostics;
 using System.Net.Http.Headers;
 
@@ -37,6 +39,9 @@ builder.Services.AddScoped(sp => {
     
     return httpClient;
 });
+
+// Register LinkedInService
+builder.Services.AddScoped<ILinkedInService, LinkedInService>();
 
 // Log the current environment - removed in production builds
 #if DEBUG

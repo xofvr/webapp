@@ -1,5 +1,11 @@
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    line-height: 1.6;
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 h1:focus {
@@ -12,8 +18,13 @@ a, .btn-link {
 
 .btn-primary {
     color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+    background-color: #0072b1;
+    border-color: #0072b1;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: #005d92;
+    border-color: #005d92;
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
@@ -111,4 +122,83 @@ code {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
+}
+
+/* Animation for skill cards */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.skill-card {
+    animation: fadeInUp 0.5s ease forwards;
+    animation-delay: calc(var(--animation-order) * 0.1s);
+    opacity: 0;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #0072b1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #005d92;
+}
+
+/* Project card hover effect */
+.project-card img {
+    transition: transform 0.5s ease;
+}
+
+.project-card:hover img {
+    transform: scale(1.03);
+}
+
+/* Contact section link highlight */
+.social-link {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+    text-align: center;
+}
+
+.social-link:hover {
+    background-color: #0072b1;
+    color: white !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 5rem 0 3rem;
+        text-align: center;
+    }
+    
+    .profile-image {
+        margin-top: 2rem;
+        max-width: 200px;
+    }
+    
+    .section-title {
+        margin-bottom: 1.5rem;
+    }
 }
