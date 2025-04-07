@@ -2,22 +2,33 @@
 @inject IJSRuntime JS
 
 <div class="page">
-    <div class="sidebar">
+    <header class="main-header">
         <NavMenu />
-    </div>
+    </header>
 
-    <main>
-        <div class="top-row px-4">
-            <!-- Theme toggle button -->
-            <button class="btn btn-sm btn-outline-secondary" @onclick="ToggleTheme">
-                <i class="bi bi-moon-stars"></i> Theme
-            </button>
-        </div>
-
-        <article class="content px-4">
+    <main class="main-content">
+        <article class="content-container">
             @Body
         </article>
     </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>&copy; @DateTime.Now.Year Farhan S. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="d-flex justify-content-md-end align-items-center">
+                        <p class="mb-0 me-3">Built with .NET 8 and Blazor WebAssembly</p>
+                        <button class="btn theme-btn" @onclick="ToggleTheme" title="Toggle theme">
+                            <i class="bi bi-moon-stars"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
 </div>
 
 @code {
