@@ -5,8 +5,8 @@ using FarhanS.Portfolio;
 using FarhanS.Portfolio.Infrastructure.Data;
 using FarhanS.Portfolio.Web;
 using FarhanS.Portfolio.Web.Services;
-using System.Diagnostics;
 using System.Net.Http.Headers;
+using Microsoft.Extensions.Caching.Memory;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -23,12 +23,26 @@ Console.WriteLine($"Base Address: {builder.HostEnvironment.BaseAddress}");
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 builder.Configuration.AddJsonFile($"appsettings.{builder.HostEnvironment.Environment}.json", optional: true, reloadOnChange: true);
 
-// Configure HttpClient with API base URL from config and proper caching
+// Configure HttpClient with API base URL from config
 var apiBaseUrl = builder.Configuration.GetSection("ApiSettings:ApiBaseUrl").Value ?? builder.HostEnvironment.BaseAddress;
 Console.WriteLine($"API Base URL: {apiBaseUrl}");
 
+// Add memory cache with optimized settings for better performance
+builder.Services.AddMemoryCache(options =>
+{
+    // Set reasonable size limits for client-side cache
+    options.SizeLimit = 1024;
+    // Scan for expired items every 30 seconds (not too frequent to reduce overhead)
+    options.ExpirationScanFrequency = TimeSpan.FromSeconds(30);
+});
+
+// Add HttpClient with optimized performance settings
 builder.Services.AddScoped(sp => {
     var httpClient = new HttpClient { BaseAddress = new Uri(apiBaseUrl) };
+    
+    // Enable response compression
+    httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+    httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("br"));
     
     // Add default headers for better API performance
     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -40,13 +54,8 @@ builder.Services.AddScoped(sp => {
     return httpClient;
 });
 
-// Register LinkedInService
+// Register Services with appropriate lifetimes
 builder.Services.AddScoped<ILinkedInService, LinkedInService>();
-
-// Log the current environment - removed in production builds
-#if DEBUG
-Console.WriteLine($"Current Environment: {builder.HostEnvironment.Environment}");
-#endif
 
 // Register DbContext if connection string is available
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -57,7 +66,13 @@ if (!string.IsNullOrEmpty(connectionString))
     try
     {
         builder.Services.AddDbContextFactory<ApplicationDbContext>(options => {
-            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), 
+                sqlOptions => {
+                    // Enable retrying failed database operations
+                    sqlOptions.EnableRetryOnFailure(3, TimeSpan.FromSeconds(5), null);
+                    // Optimize command timeout
+                    sqlOptions.CommandTimeout(15);
+                });
             
             // Add performance optimizations
             options.EnableSensitiveDataLogging(builder.HostEnvironment.IsDevelopment());
@@ -70,13 +85,6 @@ if (!string.IsNullOrEmpty(connectionString))
         Console.Error.WriteLine($"Error configuring database: {ex.Message}");
     }
 }
-
-// Add memory cache for better performance
-builder.Services.AddMemoryCache();
-
-// Configure dependency injection with proper lifetime management
-// Register your services here
-// builder.Services.AddScoped<IProjectService, ProjectService>();
 
 try
 {

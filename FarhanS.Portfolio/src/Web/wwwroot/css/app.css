@@ -202,3 +202,111 @@ code {
         margin-bottom: 1.5rem;
     }
 }
+
+/* Additional custom styles for Home page */
+.hero-section {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    padding-top: 80px;
+}
+
+.profile-image {
+    border: 5px solid var(--background-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-image:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Create a placeholder profile image */
+.profile-image-placeholder {
+    width: 300px;
+    height: 300px;
+    background-color: var(--card-bg-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 6rem;
+    color: var(--primary-color);
+    font-weight: 300;
+    border: 5px solid var(--background-color);
+}
+
+/* Ensure all images have smooth transitions */
+img {
+    transition: all 0.3s ease;
+}
+
+/* Card hover effects */
+.experience-card, .skill-card, .education-card, .contact-card, .social-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.experience-card:hover, .skill-card:hover, .education-card:hover, 
+.contact-card:hover, .social-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px var(--shadow-color) !important;
+}
+
+/* Better form styling */
+.form-control {
+    background-color: var(--background-color);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.form-control:focus {
+    background-color: var(--background-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgb(13 110 253 / 25%);
+    color: var(--text-color);
+}
+
+/* Social icons styling */
+.social-card .bi {
+    color: var(--text-color);
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.social-card .bi:hover {
+    transform: scale(1.2);
+    color: var(--primary-color);
+}
+
+/* Loading state improvements */
+.loading-container {
+    margin-top: 120px;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 767.98px) {
+    .hero-section {
+        min-height: auto;
+        padding: 100px 0 50px 0;
+        text-align: center;
+    }
+    
+    .hero-section .col-lg-6:first-child {
+        margin-bottom: 3rem;
+    }
+    
+    .d-flex.gap-3 {
+        justify-content: center;
+    }
+    
+    .section-title:after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .section-title {
+        text-align: center;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}

@@ -16,19 +16,38 @@ const base = "/";
 const baseUrl = new URL(base, self.origin);
 const manifestUrlList = self.assetsManifest.assets.map(asset => new URL(asset.url, baseUrl).href);
 
-async function onInstall(event) {
-    console.info('Service worker: Install');
+// Cache first-load resources (improved efficiency)
+const firstLoadResources = [
+    '/',
+    '/index.html',
+    '/_framework/blazor.webassembly.js',
+    '/css/app.css',
+    '/css/theme.css',
+    '/js/theme.js',
+    '/js/navigation.js'
+];
 
-    // Fetch and cache all matching items from the assets manifest
+async function onInstall(event) {
+    console.info('Service worker: Installing...');
+
+    // Cache all resources during install for better performance
     const assetsRequests = self.assetsManifest.assets
         .filter(asset => offlineAssetsInclude.some(pattern => pattern.test(asset.url)))
         .filter(asset => !offlineAssetsExclude.some(pattern => pattern.test(asset.url)))
-        .map(asset => new Request(asset.url, { integrity: asset.hash, cache: 'no-cache' }));
-    await caches.open(cacheName).then(cache => cache.addAll(assetsRequests));
+        .map(asset => new Request(asset.url, { cache: 'reload' }));
+    
+    // Prioritize first-load resources
+    const firstLoadRequests = firstLoadResources.map(url => new Request(url, { cache: 'reload' }));
+    
+    await caches.open(cacheName).then(cache => {
+        // Cache first-load resources first
+        return cache.addAll(firstLoadRequests)
+            .then(() => cache.addAll(assetsRequests));
+    });
 }
 
 async function onActivate(event) {
-    console.info('Service worker: Activate');
+    console.info('Service worker: Activating...');
 
     // Delete unused caches
     const cacheKeys = await caches.keys();
@@ -38,18 +57,85 @@ async function onActivate(event) {
 }
 
 async function onFetch(event) {
-    let cachedResponse = null;
-    if (event.request.method === 'GET') {
-        // For all navigation requests, try to serve index.html from cache,
-        // unless that request is for an offline resource.
-        // If you need some URLs to be server-rendered, edit the following check to exclude those URLs
-        const shouldServeIndexHtml = event.request.mode === 'navigate'
-            && !manifestUrlList.some(url => url === event.request.url);
-
-        const request = shouldServeIndexHtml ? 'index.html' : event.request;
-        const cache = await caches.open(cacheName);
-        cachedResponse = await cache.match(request);
+    if (event.request.method !== 'GET') {
+        return fetch(event.request);
     }
 
-    return cachedResponse || fetch(event.request);
+    // For HTML, JavaScript, or CSS, always try network first, then fall back to cache
+    const requestUrl = new URL(event.request.url);
+    const isHtmlJsCss = /\.html$|\.js$|\.css$/.test(requestUrl.pathname);
+    const isApiRequest = requestUrl.pathname.startsWith('/api/');
+    
+    if (isApiRequest) {
+        // For API requests, use network with a suitable timeout
+        return fetchWithTimeout(event.request, 3000)
+            .catch(() => createOfflineApiResponse());
+    }
+    
+    if (isHtmlJsCss) {
+        // Try network first, then fall back to cache
+        return fetch(event.request)
+            .then(response => {
+                if (response.ok) {
+                    // If successful, update the cache
+                    updateCache(event.request, response.clone());
+                    return response;
+                }
+                // If network fails, try the cache
+                return fromCache(event.request);
+            })
+            .catch(error => {
+                console.error('Fetch failed; returning offline page instead.', error);
+                return fromCache(event.request);
+            });
+    }
+    
+    // For other requests, try cache first, then network
+    return fromCache(event.request)
+        .then(response => response || fetch(event.request)
+            .then(networkResponse => {
+                if (networkResponse.ok) {
+                    updateCache(event.request, networkResponse.clone());
+                }
+                return networkResponse;
+            })
+        );
+}
+
+function fetchWithTimeout(request, timeout) {
+    return new Promise((resolve, reject) => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+        
+        fetch(request, { signal: controller.signal })
+            .then(response => {
+                clearTimeout(timeoutId);
+                resolve(response);
+            })
+            .catch(error => {
+                clearTimeout(timeoutId);
+                reject(error);
+            });
+    });
+}
+
+function createOfflineApiResponse() {
+    return new Response(JSON.stringify({ 
+        offline: true, 
+        message: 'You are currently offline. Please check your connection.' 
+    }), {
+        status: 503,
+        headers: { 'Content-Type': 'application/json' }
+    });
+}
+
+async function fromCache(request) {
+    const cache = await caches.open(cacheName);
+    const matching = await cache.match(request);
+    return matching;
+}
+
+async function updateCache(request, response) {
+    const cache = await caches.open(cacheName);
+    await cache.put(request, response);
 }

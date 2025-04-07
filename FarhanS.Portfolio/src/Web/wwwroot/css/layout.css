@@ -1,35 +1,117 @@
 /* MainLayout component styles */
 .navbar {
     padding: 15px 0;
+    background-color: var(--navbar-bg) !important;
+    color: var(--navbar-text) !important;
 }
 
 .nav-link {
     margin: 0 8px;
     font-weight: 500;
-    color: #212529;
     transition: color 0.3s ease;
+    color: var(--navbar-text) !important;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    color: var(--navbar-text) !important;
 }
 
 .nav-link:hover {
-    color: var(--primary-color);
+    color: var(--primary-color) !important;
 }
 
 main {
-    padding-top: 70px; /* Adjust for fixed navbar */
+    padding-top: 76px; /* Adjust for fixed navbar */
+    min-height: calc(100vh - 76px);
+}
+
+/* Loading container */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: var(--text-color);
+}
+
+/* Social icons in navbar */
+.navbar .bi {
+    font-size: 1.2rem;
+}
+
+/* Custom section styles */
+.section-title {
+    font-weight: 700;
+    margin-bottom: 2rem;
+    position: relative;
+    display: inline-block;
+}
+
+.section-title:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    height: 3px;
+    width: 70px;
+    background-color: var(--primary-color);
+}
+
+/* Mobile navbar adjustment */
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        background-color: var(--navbar-bg);
+        padding: 1rem;
+        border-radius: 0.25rem;
+        box-shadow: 0 4px 6px var(--shadow-color);
+        margin-top: 0.5rem;
+    }
+    
+    .navbar-nav .nav-item {
+        padding: 0.5rem 0;
+    }
 }
 
 /* Dark mode specific layout styles */
 [data-theme="dark"] .navbar {
-    background-color: var(--card-bg-color) !important;
+    background-color: var(--navbar-bg) !important;
 }
 
 [data-theme="dark"] .navbar-light .navbar-brand,
 [data-theme="dark"] .navbar-light .nav-link {
-    color: var(--text-color);
+    color: var(--navbar-text) !important;
 }
 
-[data-theme="dark"] .navbar-light .navbar-toggler-icon {
-    filter: invert(0.8);
+[data-theme="dark"] .navbar-toggler-icon,
+.navbar-light .navbar-toggler-icon {
+    filter: brightness(var(--navbar-icon-brightness, 0.8));
+}
+
+[data-theme="light"] .navbar-toggler-icon {
+    filter: brightness(0.8);
+}
+
+/* Fix for sidebar navigation visibility in all themes */
+.top-row.ps-3.navbar.navbar-dark {
+    background-color: var(--navbar-bg) !important; 
+}
+
+.sidebar {
+    background-image: none !important;
+    background-color: var(--card-bg-color) !important;
+}
+
+.nav-item ::deep a {
+    color: var(--navbar-text) !important;
+}
+
+.nav-item ::deep a.active, 
+.nav-item ::deep a:hover {
+    background-color: var(--primary-color) !important;
+    color: white !important;
 }
 
 [data-theme="dark"] .shadow-sm {

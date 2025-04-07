@@ -8,230 +8,273 @@
 
 <!-- Dark mode toggle button -->
 <div class="theme-toggle-wrapper">
-    <button id="theme-toggle" class="theme-toggle" @onclick="ToggleTheme" title="Toggle Dark/Light Mode">
+    <button id="theme-toggle" class="theme-toggle" @onclick="ToggleTheme" title="Toggle Dark/Light Mode" aria-label="Toggle theme">
         <i class="bi bi-moon-stars"></i>
     </button>
 </div>
 
-<div class="hero-section">
+<!-- Hero section -->
+<div class="hero-section py-5">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6">
                 <h1 class="display-4 fw-bold">@(Profile?.FullName ?? "Farhan S.")</h1>
                 <h2 class="text-primary">@(Profile?.Title ?? "Software Developer")</h2>
-                <p class="lead mt-3">@(Profile?.Summary ?? "Crafting efficient, elegant solutions to complex problems.")</p>
-                <div class="mt-4">
-                    <a href="@Profile?.ProfileUrl" target="_blank" class="btn btn-primary me-2">
-                        <i class="bi bi-linkedin me-1"></i> Connect on LinkedIn
-                    </a>
-                    <a href="#contact" class="btn btn-outline-dark">Get In Touch</a>
+                <p class="lead my-4">
+                    Building modern web applications with cutting-edge technologies.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="#contact" class="btn btn-primary px-4 py-2">Get In Touch</a>
+                    <a href="#projects" class="btn btn-outline-secondary px-4 py-2">See My Work</a>
                 </div>
             </div>
             <div class="col-lg-6 text-center">
-                <!-- Profile image from LinkedIn or fallback -->
-                <img src="@(string.IsNullOrEmpty(Profile?.ProfileImageUrl) ? "images/profile-placeholder.jpg" : Profile.ProfileImageUrl)" 
-                     alt="@(Profile?.FullName ?? "Farhan S.")" class="img-fluid rounded-circle profile-image shadow">
+                <img src="images/profile.jpg" alt="Farhan S." class="img-fluid rounded-circle profile-image shadow-lg" 
+                     style="max-width: 300px;" onerror="this.onerror=null; this.src='images/profile-placeholder.jpg';">
             </div>
         </div>
     </div>
 </div>
 
-<section id="about" class="py-5">
-    <div class="container">
-        <h2 class="section-title">About Me</h2>
-        <div class="row">
-            <div class="col-lg-8 offset-lg-2">
-                <p class="lead">
-                    @(Profile?.Summary ?? "I'm a passionate software developer with expertise in modern web technologies.")
-                </p>
-                <p>
-                    With a background in software development, I bring a unique perspective that emphasizes both technical 
-                    performance and exceptional user experience. My goal is to build applications that are not only 
-                    functionally robust but also intuitive and accessible to users.
-                </p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section id="experience" class="py-5 bg-light">
-    <div class="container">
-        <h2 class="section-title">Professional Experience</h2>
-        <div class="row">
-            @if (Profile?.Experiences != null && Profile.Experiences.Any())
-            {
-                @foreach (var experience in Profile.Experiences)
-                {
-                    <div class="col-md-6 mb-4">
-                        <div class="card experience-card h-100">
-                            <div class="card-body">
-                                <h3 class="card-title h5">@experience.Title</h3>
-                                <h4 class="company-name h6">@experience.Company</h4>
-                                <p class="text-muted">@experience.Duration @(!string.IsNullOrEmpty(experience.Location) ? $"• {experience.Location}" : "")</p>
-                                <p class="card-text">@experience.Description</p>
+<!-- Main content sections -->
+<Virtualize Context="section" ItemsProvider="@GetSectionsAsync">
+    <ItemContent>
+        @if (section == "about")
+        {
+            <section id="about" class="py-5">
+                <div class="container">
+                    <h2 class="section-title">About Me</h2>
+                    <div class="row">
+                        <div class="col-lg-8 offset-lg-2">
+                            <p class="lead">
+                                @(Profile?.Summary ?? "I'm a passionate software developer with expertise in modern web technologies.")
+                            </p>
+                            <p>
+                                With a background in software development, I bring a unique perspective that emphasizes both technical 
+                                performance and exceptional user experience. My goal is to build applications that are not only 
+                                functionally robust but also intuitive and accessible to users.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
+        else if (section == "experience")
+        {
+            <section id="experience" class="py-5 bg-light">
+                <div class="container">
+                    <h2 class="section-title">Experience</h2>
+                    <div class="row">
+                        @if (Profile?.Experiences != null && Profile.Experiences.Any())
+                        {
+                            @foreach (var experience in Profile.Experiences)
+                            {
+                                <div class="col-lg-6 mb-4">
+                                    <div class="card experience-card h-100 border-0 shadow-sm">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between">
+                                                <h3 class="card-title h5">@experience.Title</h3>
+                                                <span class="badge bg-primary">@experience.Duration</span>
+                                            </div>
+                                            <h4 class="card-subtitle mb-2 text-muted h6">@experience.Company</h4>
+                                            <p class="card-text">@experience.Description</p>
+                                            <div class="mt-3">
+                                                <span class="badge bg-light text-dark me-1 mb-1">@experience.Location</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="col-12 text-center">
+                                <p>Experience data is being loaded...</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </section>
+        }
+        else if (section == "skills")
+        {
+            <section id="skills" class="py-5">
+                <div class="container">
+                    <h2 class="section-title">Skills & Expertise</h2>
+                    <div class="row row-cols-1 row-cols-md-3 g-4">
+                        @{
+                            var skillCategories = Profile?.Skills
+                                ?.GroupBy(s => s.Category)
+                                ?.OrderBy(g => g.Key)
+                                ?.ToList();
+                                
+                            if (skillCategories != null && skillCategories.Any())
+                            {
+                                foreach (var category in skillCategories)
+                                {
+                                    <div class="col">
+                                        <div class="card skill-card h-100 shadow-sm">
+                                            <div class="card-body">
+                                                <h3 class="card-title h5">
+                                                    <i class="bi @GetCategoryIcon(category.Key) me-2"></i>@category.Key
+                                                </h3>
+                                                <div class="mt-3">
+                                                    @foreach (var skill in category.OrderByDescending(s => s.Endorsements))
+                                                    {
+                                                        <span class="badge bg-primary me-1 mb-1">@skill.Name</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="col-12 text-center">
+                                    <p>Skills data is being loaded...</p>
+                                </div>
+                                
+                                <!-- Default skills as fallback -->
+                                <div class="col">
+                                    <div class="card skill-card h-100 shadow-sm">
+                                        <div class="card-body">
+                                            <h3 class="card-title h5"><i class="bi bi-code-slash me-2"></i>Languages</h3>
+                                            <div class="mt-3">
+                                                <span class="badge bg-primary me-1 mb-1">C#</span>
+                                                <span class="badge bg-primary me-1 mb-1">JavaScript</span>
+                                                <span class="badge bg-primary me-1 mb-1">TypeScript</span>
+                                                <span class="badge bg-primary me-1 mb-1">HTML/CSS</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="card skill-card h-100 shadow-sm">
+                                        <div class="card-body">
+                                            <h3 class="card-title h5"><i class="bi bi-braces me-2"></i>Frameworks</h3>
+                                            <div class="mt-3">
+                                                <span class="badge bg-primary me-1 mb-1">.NET Core</span>
+                                                <span class="badge bg-primary me-1 mb-1">Blazor</span>
+                                                <span class="badge bg-primary me-1 mb-1">ASP.NET</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="card skill-card h-100 shadow-sm">
+                                        <div class="card-body">
+                                            <h3 class="card-title h5"><i class="bi bi-hdd me-2"></i>Databases</h3>
+                                            <div class="mt-3">
+                                                <span class="badge bg-primary me-1 mb-1">MySQL</span>
+                                                <span class="badge bg-primary me-1 mb-1">SQL Server</span>
+                                                <span class="badge bg-primary me-1 mb-1">MongoDB</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </section>
+        }
+        else if (section == "education")
+        {
+            <section id="education" class="py-5 bg-light">
+                <div class="container">
+                    <h2 class="section-title">Education</h2>
+                    <div class="row">
+                        @if (Profile?.Education != null && Profile.Education.Any())
+                        {
+                            @foreach (var education in Profile.Education)
+                            {
+                                <div class="col-md-6 mb-4">
+                                    <div class="card education-card h-100 shadow-sm">
+                                        <div class="card-body">
+                                            <h3 class="card-title h5">@education.Institution</h3>
+                                            <p><strong>@education.Degree</strong> @(!string.IsNullOrEmpty(education.Field) ? $"in {education.Field}" : "")</p>
+                                            <p class="text-muted">@education.Duration</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="col-12 text-center">
+                                <p>Education data is being loaded...</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </section>
+        }
+        else if (section == "contact")
+        {
+            <section id="contact" class="py-5">
+                <div class="container">
+                    <h2 class="section-title">Contact Me</h2>
+                    <div class="row">
+                        <div class="col-lg-6 mb-4">
+                            <div class="card contact-card shadow-sm">
+                                <div class="card-body">
+                                    <h3 class="h5 mb-4">Let's Connect</h3>
+                                    <form>
+                                        <div class="mb-3">
+                                            <label for="name" class="form-label">Name</label>
+                                            <input type="text" class="form-control" id="name" placeholder="Your Name">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="email" class="form-label">Email</label>
+                                            <input type="email" class="form-control" id="email" placeholder="your.email@example.com">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="message" class="form-label">Message</label>
+                                            <textarea class="form-control" id="message" rows="4" placeholder="How can I help you?"></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Send Message</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card social-card shadow-sm h-100">
+                                <div class="card-body text-center d-flex flex-column justify-content-center">
+                                    <h3 class="h5 mb-4">Find Me Online</h3>
+                                    <div class="d-flex justify-content-center gap-4 mb-4">
+                                        <a href="@(Profile?.ProfileUrl ?? "https://www.linkedin.com/in/m-shakeel014/")" target="_blank" rel="noopener" class="text-decoration-none" aria-label="LinkedIn">
+                                            <i class="bi bi-linkedin fs-3"></i>
+                                        </a>
+                                        <a href="https://github.com/farhanshahoriar" target="_blank" rel="noopener" class="text-decoration-none" aria-label="GitHub">
+                                            <i class="bi bi-github fs-3"></i>
+                                        </a>
+                                    </div>
+                                    <p class="mb-0">Email: contact@farhans.dev</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                }
-            }
-            else
-            {
-                <div class="col-12 text-center">
-                    <p>Experience data is being loaded...</p>
                 </div>
-            }
-        </div>
-    </div>
-</section>
-
-<section id="skills" class="py-5">
-    <div class="container">
-        <h2 class="section-title">Technical Skills</h2>
-        <div class="row">
-            @if (Profile?.Skills != null && Profile.Skills.Any())
-            {
-                <div class="col-md-3 mb-4">
-                    <div class="card skill-card h-100">
-                        <div class="card-body">
-                            <h3 class="card-title h5"><i class="bi bi-code-slash me-2"></i>Languages</h3>
-                            <ul class="list-unstyled">
-                                @foreach (var skill in Profile.Skills.Where(s => s.Category == "Languages"))
-                                {
-                                    <li><span class="badge bg-primary me-1">@skill.Name</span></li>
-                                }
-                            </ul>
-                        </div>
-                    </div>
+            </section>
+            
+            <footer class="footer py-4 bg-dark text-white">
+                <div class="container text-center">
+                    <p>&copy; @DateTime.Now.Year Farhan S. All rights reserved.</p>
+                    <p class="small">Made with <i class="bi bi-heart-fill text-danger"></i> using Blazor WebAssembly</p>
                 </div>
-                <div class="col-md-3 mb-4">
-                    <div class="card skill-card h-100">
-                        <div class="card-body">
-                            <h3 class="card-title h5"><i class="bi bi-box me-2"></i>Frameworks</h3>
-                            <ul class="list-unstyled">
-                                @foreach (var skill in Profile.Skills.Where(s => s.Category == "Frameworks"))
-                                {
-                                    <li><span class="badge bg-success me-1">@skill.Name</span></li>
-                                }
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <div class="card skill-card h-100">
-                        <div class="card-body">
-                            <h3 class="card-title h5"><i class="bi bi-database me-2"></i>Databases</h3>
-                            <ul class="list-unstyled">
-                                @foreach (var skill in Profile.Skills.Where(s => s.Category == "Databases"))
-                                {
-                                    <li><span class="badge bg-warning text-dark me-1">@skill.Name</span></li>
-                                }
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <div class="card skill-card h-100">
-                        <div class="card-body">
-                            <h3 class="card-title h5"><i class="bi bi-tools me-2"></i>Tools & DevOps</h3>
-                            <ul class="list-unstyled">
-                                @foreach (var skill in Profile.Skills.Where(s => 
-                                    s.Category != "Languages" && 
-                                    s.Category != "Frameworks" && 
-                                    s.Category != "Databases"))
-                                {
-                                    <li><span class="badge bg-info me-1">@skill.Name</span></li>
-                                }
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            }
-            else
-            {
-                <div class="col-md-4 mb-4">
-                    <div class="card skill-card h-100">
-                        <div class="card-body">
-                            <h3 class="card-title h5"><i class="bi bi-code-slash me-2"></i>Languages</h3>
-                            <ul class="list-unstyled">
-                                <li><span class="badge bg-primary me-1">C#</span></li>
-                                <li><span class="badge bg-primary me-1">JavaScript</span></li>
-                                <li><span class="badge bg-primary me-1">TypeScript</span></li>
-                                <li><span class="badge bg-primary me-1">HTML/CSS</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <!-- Default skills sections omitted for brevity -->
-            }
-        </div>
-    </div>
-</section>
-
-<section id="education" class="py-5 bg-light">
-    <div class="container">
-        <h2 class="section-title">Education</h2>
-        <div class="row">
-            @if (Profile?.Education != null && Profile.Education.Any())
-            {
-                @foreach (var education in Profile.Education)
-                {
-                    <div class="col-md-6 mb-4">
-                        <div class="card education-card h-100">
-                            <div class="card-body">
-                                <h3 class="card-title h5">@education.Institution</h3>
-                                <p><strong>@education.Degree</strong> @(!string.IsNullOrEmpty(education.Field) ? $"in {education.Field}" : "")</p>
-                                <p class="text-muted">@education.Duration</p>
-                            </div>
-                        </div>
-                    </div>
-                }
-            }
-            else
-            {
-                <div class="col-12 text-center">
-                    <p>Education data is being loaded...</p>
-                </div>
-            }
-        </div>
-    </div>
-</section>
-
-<section id="contact" class="py-5 bg-light">
-    <div class="container">
-        <h2 class="section-title">Get In Touch</h2>
-        <div class="row">
-            <div class="col-lg-6 offset-lg-3">
-                <div class="contact-info text-center mb-4">
-                    <p class="lead">Interested in working together? Feel free to reach out!</p>
-                    <div class="d-flex justify-content-center social-links">
-                        <a href="https://www.linkedin.com/in/your-linkedin-profile" class="social-link" target="_blank" title="LinkedIn">
-                            <i class="bi bi-linkedin fs-3"></i>
-                        </a>
-                        <a href="mailto:your.email@example.com" class="social-link" title="Email">
-                            <i class="bi bi-envelope fs-3"></i>
-                        </a>
-                        <a href="https://github.com/your-username" class="social-link" target="_blank" title="GitHub">
-                            <i class="bi bi-github fs-3"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<footer class="footer py-4 bg-dark text-white">
-    <div class="container text-center">
-        <p>&copy; @DateTime.Now.Year Farhan S. All rights reserved.</p>
-        <p class="small">Made with <i class="bi bi-heart-fill text-danger"></i> using Blazor</p>
-    </div>
-</footer>
+            </footer>
+        }
+    </ItemContent>
+</Virtualize>
 
 @code {
     private LinkedInProfile? Profile { get; set; }
+    private string[] sections = new[] { "about", "experience", "skills", "education", "contact" };
 
     protected override async Task OnInitializedAsync()
     {
+        // Fetch profile data asynchronously
         Profile = await LinkedInService.GetProfileDataAsync();
     }
 
@@ -239,13 +282,34 @@
     {
         if (firstRender)
         {
-            // Initialize theme based on saved preference
-            await JSRuntime.InvokeVoidAsync("initializeTheme");
+            // Initialize smooth scrolling
+            await JSRuntime.InvokeVoidAsync("navigationManager.initializeSmoothScroll");
         }
+    }
+
+    private ValueTask<ItemsProviderResult<string>> GetSectionsAsync(ItemsProviderRequest request)
+    {
+        return ValueTask.FromResult(new ItemsProviderResult<string>(
+            sections.Skip(request.StartIndex).Take(request.Count),
+            sections.Length));
     }
 
     private async Task ToggleTheme()
     {
-        await JSRuntime.InvokeVoidAsync("toggleTheme");
+        await JSRuntime.InvokeVoidAsync("themeManager.toggle");
+    }
+    
+    private string GetCategoryIcon(string category)
+    {
+        return category?.ToLower() switch
+        {
+            "languages" => "bi-code-slash",
+            "frameworks" => "bi-braces",
+            "databases" => "bi-hdd",
+            "tools" => "bi-tools",
+            "cloud" => "bi-cloud",
+            "devops" => "bi-gear",
+            _ => "bi-star"
+        };
     }
 }

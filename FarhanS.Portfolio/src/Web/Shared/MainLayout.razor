@@ -1,11 +1,13 @@
 @inherits LayoutComponentBase
+@inject IJSRuntime JS
 
 <div class="page">
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
             <div class="container">
                 <a class="navbar-brand fw-bold" href="/">FS</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
@@ -14,22 +16,27 @@
                             <a class="nav-link" href="#about">About</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="#experience">Experience</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="#skills">Skills</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#projects">Projects</a>
+                            <a class="nav-link" href="#education">Education</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#contact">Contact</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="https://www.linkedin.com/in/m-shakeel014/" target="_blank">
-                                <i class="bi bi-linkedin"></i>
+                            <a class="nav-link" href="https://www.linkedin.com/in/m-shakeel014/" target="_blank" rel="noopener">
+                                <i class="bi bi-linkedin" aria-hidden="true"></i>
+                                <span class="visually-hidden">LinkedIn</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="https://github.com/your-username" target="_blank">
-                                <i class="bi bi-github"></i>
+                            <a class="nav-link" href="https://github.com/farhanshahoriar" target="_blank" rel="noopener">
+                                <i class="bi bi-github" aria-hidden="true"></i>
+                                <span class="visually-hidden">GitHub</span>
                             </a>
                         </li>
                     </ul>
@@ -42,3 +49,17 @@
         @Body
     </main>
 </div>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Initialize smooth scroll for navigation links
+            await JS.InvokeVoidAsync("navigationManager.initializeSmoothScroll");
+            
+            // Register intersection observers for section visibility tracking
+            await JS.InvokeVoidAsync("registerIntersectionObservers");
+        }
+    }
+}
