@@ -256,8 +256,19 @@
             
             <footer class="footer py-4 text-center">
                 <div class="container">
-                    <p class="mb-1">&copy; @DateTime.Now.Year Farhan S. All rights reserved.</p>
-                    <p class="small mb-0">Made with <i class="bi bi-heart-fill text-danger"></i> using Blazor WebAssembly</p>
+                    <div class="row align-items-center">
+                        <div class="col-md-5 text-md-start mb-3 mb-md-0">
+                            <p class="mb-0">&copy; @DateTime.Now.Year Farhan S. All rights reserved.</p>
+                        </div>
+                        <div class="col-md-2 text-center mb-3 mb-md-0">
+                            <button class="btn theme-btn" @onclick="ToggleTheme" title="Toggle theme">
+                                <i class="bi bi-moon-stars"></i>
+                            </button>
+                        </div>
+                        <div class="col-md-5 text-md-end">
+                            <p class="mb-0">Made with <i class="bi bi-heart-fill text-danger"></i> using Blazor WebAssembly</p>
+                        </div>
+                    </div>
                 </div>
             </footer>
         }
@@ -302,5 +313,10 @@
             "devops" => "bi-gear",
             _ => "bi-star"
         };
+    }
+
+    private async Task ToggleTheme()
+    {
+        await JSRuntime.InvokeVoidAsync("themeManager.toggle");
     }
 }
