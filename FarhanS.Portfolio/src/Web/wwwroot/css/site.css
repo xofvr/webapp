@@ -31,6 +31,15 @@
     font-size: 1.2rem;
 }
 
+/* Theme-responsive section backgrounds */
+.section-alt-bg {
+    background-color: #f8f9fa;
+}
+
+:root[data-bs-theme="dark"] .section-alt-bg {
+    background-color: #2b3035; /* Darker shade for dark mode */
+}
+
 /* Responsive footer adjustments */
 @media (max-width: 767.98px) {
     .footer .row > div {
