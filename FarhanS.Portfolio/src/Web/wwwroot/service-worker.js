@@ -2,7 +2,7 @@
 // It provides offline support and caching for better performance
 
 // Increment this version when you update your service worker
-const CACHE_VERSION = 'v1.0.3';
+const CACHE_VERSION = 'v1.0.4';
 
 // Use a fixed CACHE_NAME for each deployment
 // Will be updated when a new version is deployed
@@ -22,6 +22,17 @@ const PRECACHE_ASSETS = [
   '/icon-512.png',
   '/_framework/blazor.webassembly.js',
   '/service-worker-assets.js'
+];
+
+// Define allowed external domains for CSP purposes
+const ALLOWED_EXTERNAL_DOMAINS = [
+  'cdn.jsdelivr.net',
+  'fonts.googleapis.com',
+  'fonts.gstatic.com',
+  'logos-world.net',
+  'upload.wikimedia.org',
+  'js.monitor.azure.com',
+  'api.farhans-portfolio.com'
 ];
 
 // Install event - precache all essential assets
@@ -47,7 +58,9 @@ self.addEventListener('activate', event => {
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.filter(cacheName => {
-          return cacheName.startsWith('farhans-portfolio-') && cacheName !== CACHE_NAME;
+          // Clean all previous portfolio caches and any offline caches
+          return (cacheName.startsWith('farhans-portfolio-') || cacheName.startsWith('offline-cache-')) 
+                 && cacheName !== CACHE_NAME;
         }).map(cacheName => {
           console.log('Service worker removing old cache:', cacheName);
           return caches.delete(cacheName);
@@ -61,21 +74,52 @@ self.addEventListener('activate', event => {
     }).then(() => {
       // Immediately claim clients so the updated service worker controls all pages
       return self.clients.claim();
-    }).then(() => {
-      // Reload all open tabs to ensure they have the latest version
-      return self.clients.matchAll({ type: 'window' }).then(clients => {
-        clients.forEach(client => {
-          client.navigate(client.url);
-        });
-      });
     })
   );
 });
+
+// Safe cache update function that checks URL validity and handles errors
+function safeUpdateCache(cache, request, response) {
+  // Only cache same-origin resources or allowed external domains
+  try {
+    const url = new URL(request.url);
+    const isSameOrigin = url.origin === self.location.origin;
+    const isAllowedExternalDomain = ALLOWED_EXTERNAL_DOMAINS.some(domain => url.hostname.includes(domain));
+    
+    // Skip chrome-extension URLs and other problematic schemes
+    if (url.protocol === 'chrome-extension:' || 
+        !['http:', 'https:'].includes(url.protocol)) {
+      return Promise.resolve();
+    }
+    
+    if (isSameOrigin || isAllowedExternalDomain) {
+      // Clone the response for caching
+      const responseToCache = response.clone();
+      return cache.put(request, responseToCache);
+    }
+  } catch (error) {
+    console.error('Error updating cache:', error);
+  }
+  return Promise.resolve();
+}
 
 // Fetch event - serve from cache or network with improved refresh logic
 self.addEventListener('fetch', event => {
   // For non-GET requests, go to the network
   if (event.request.method !== 'GET') {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+  
+  // Skip handling of chrome-extension and other non-http(s) requests
+  try {
+    const requestUrl = new URL(event.request.url);
+    if (!['http:', 'https:'].includes(requestUrl.protocol)) {
+      event.respondWith(fetch(event.request));
+      return;
+    }
+  } catch (error) {
+    // Invalid URL, pass through to network
     event.respondWith(fetch(event.request));
     return;
   }
@@ -102,10 +146,8 @@ self.addEventListener('fetch', event => {
         .then(response => {
           // Only cache successful responses
           if (response.ok) {
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME).then(cache => {
-              cache.put(event.request, responseToCache);
-            });
+            const cache = caches.open(CACHE_NAME)
+              .then(cache => safeUpdateCache(cache, event.request, response));
           }
           return response;
         })
@@ -124,11 +166,8 @@ self.addEventListener('fetch', event => {
         .then(response => {
           // Cache successful API responses
           if (response.ok) {
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME).then(cache => {
-              // Set a short cache expiration for API responses
-              cache.put(event.request, responseToCache);
-            });
+            const cache = caches.open(CACHE_NAME)
+              .then(cache => safeUpdateCache(cache, event.request, response));
           }
           return response;
         })
@@ -145,10 +184,8 @@ self.addEventListener('fetch', event => {
     event.respondWith(
       fetch(event.request)
         .then(response => {
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, responseToCache);
-          });
+          const cache = caches.open(CACHE_NAME)
+            .then(cache => safeUpdateCache(cache, event.request, response));
           return response;
         })
         .catch(() => {
@@ -164,10 +201,8 @@ self.addEventListener('fetch', event => {
       fetch(event.request)
         .then(response => {
           // Cache the response
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, responseToCache);
-          });
+          const cache = caches.open(CACHE_NAME)
+            .then(cache => safeUpdateCache(cache, event.request, response));
           return response;
         })
         .catch(() => {
@@ -191,29 +226,16 @@ self.addEventListener('fetch', event => {
       caches.match(event.request)
         .then(cachedResponse => {
           if (cachedResponse) {
-            // Start a fetch to update the cache in background
-            fetch(event.request)
-              .then(response => {
-                if (response.ok) {
-                  caches.open(CACHE_NAME).then(cache => {
-                    cache.put(event.request, response);
-                  });
-                }
-              })
-              .catch(() => { /* Ignore fetch errors */ });
-            
+            // Return cached response immediately
             return cachedResponse;
           }
           
-          // If not in cache, get from network and cache
+          // If not in cache, get from network
           return fetch(event.request)
             .then(response => {
               if (response.ok) {
-                // Clone the response for caching
-                const responseToCache = response.clone();
-                caches.open(CACHE_NAME).then(cache => {
-                  cache.put(event.request, responseToCache);
-                });
+                const cache = caches.open(CACHE_NAME)
+                  .then(cache => safeUpdateCache(cache, event.request, response));
               }
               return response;
             });
@@ -228,13 +250,12 @@ self.addEventListener('fetch', event => {
       .then(cachedResponse => {
         // Return cached response if available
         if (cachedResponse) {
-          // Start a network fetch in the background to update cache
+          // Asynchronously check for a newer version
           fetch(event.request)
             .then(networkResponse => {
               if (networkResponse.ok) {
-                caches.open(CACHE_NAME).then(cache => {
-                  cache.put(event.request, networkResponse);
-                });
+                caches.open(CACHE_NAME)
+                  .then(cache => safeUpdateCache(cache, event.request, networkResponse));
               }
             })
             .catch(() => { /* Ignore fetch errors */ });
@@ -245,12 +266,9 @@ self.addEventListener('fetch', event => {
         // If not in cache, get from network
         return fetch(event.request)
           .then(response => {
-            if (response.ok && event.request.url.startsWith(self.location.origin)) {
-              // Clone the response for caching
-              const responseToCache = response.clone();
-              caches.open(CACHE_NAME).then(cache => {
-                cache.put(event.request, responseToCache);
-              });
+            if (response.ok) {
+              caches.open(CACHE_NAME)
+                .then(cache => safeUpdateCache(cache, event.request, response));
             }
             return response;
           });
@@ -292,6 +310,45 @@ self.addEventListener('message', event => {
           });
         });
       })
+    );
+  } else if (event.data && event.data.type === 'CHECK_FOR_UPDATES') {
+    // Trigger a check for updates and reload if needed
+    event.waitUntil(
+      fetch('/service-worker-assets.js?v=' + new Date().getTime())
+        .then(response => response.json())
+        .then(assets => {
+          const currentHashes = assets.map(asset => asset.hash);
+          
+          // Get cached assets to compare
+          return caches.open(CACHE_NAME)
+            .then(cache => cache.match('/service-worker-assets.js'))
+            .then(response => response ? response.json() : {})
+            .then(cachedAssets => {
+              const cachedHashes = cachedAssets.map ? cachedAssets.map(asset => asset.hash) : [];
+              
+              // Compare the hashes to see if any assets have changed
+              const hasUpdates = currentHashes.some((hash, i) => 
+                !cachedHashes[i] || hash !== cachedHashes[i]);
+              
+              if (hasUpdates) {
+                // Notify the client that updates are available
+                event.ports[0].postMessage({
+                  updateAvailable: true
+                });
+              } else {
+                event.ports[0].postMessage({
+                  updateAvailable: false
+                });
+              }
+            });
+        })
+        .catch(error => {
+          console.error('Error checking for updates:', error);
+          event.ports[0].postMessage({
+            updateAvailable: false,
+            error: error.message
+          });
+        })
     );
   }
 });
