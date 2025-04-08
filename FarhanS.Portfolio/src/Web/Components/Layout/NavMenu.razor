@@ -1,39 +1,97 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">FarhanS.Portfolio</a>
+﻿@inject IJSRuntime JSRuntime
+
+<div class="navbar-container">
+    <div class="navbar-brand-container">
+        <a class="navbar-brand" href="">Farhan S.</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
     </div>
-</div>
 
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="nav flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-    </nav>
+    <div class="@NavMenuCssClass nav-scrollable">
+        <nav class="nav-menu">
+            <div class="nav-item">
+                <NavLink class="nav-link" href="#about" @onclick="CloseNavMenuOnMobile">
+                    <span class="bi bi-person-fill nav-icon" aria-hidden="true"></span> About
+                </NavLink>
+            </div>
+            <div class="nav-item">
+                <NavLink class="nav-link" href="#experience" @onclick="CloseNavMenuOnMobile">
+                    <span class="bi bi-briefcase-fill nav-icon" aria-hidden="true"></span> Experience
+                </NavLink>
+            </div>
+            <div class="nav-item">
+                <NavLink class="nav-link" href="#skills" @onclick="CloseNavMenuOnMobile">
+                    <span class="bi bi-tools nav-icon" aria-hidden="true"></span> Skills
+                </NavLink>
+            </div>
+            <div class="nav-item">
+                <NavLink class="nav-link" href="#education" @onclick="CloseNavMenuOnMobile">
+                    <span class="bi bi-mortarboard-fill nav-icon" aria-hidden="true"></span> Education
+                </NavLink>
+            </div>
+            <div class="nav-item">
+                <NavLink class="nav-link" href="#contact" @onclick="CloseNavMenuOnMobile">
+                    <span class="bi bi-envelope-fill nav-icon" aria-hidden="true"></span> Contact
+                </NavLink>
+            </div>
+        </nav>
+    </div>
 </div>
 
 @code {
-    private bool collapseNavMenu = true;
-
+    private bool collapseNavMenu = true; // Default to collapsed on mobile
+    
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Check window width to decide initial menu state
+            var isLargeScreen = await JSRuntime.InvokeAsync<bool>("eval", "window.innerWidth >= 769");
+            if (isLargeScreen)
+            {
+                collapseNavMenu = false;
+                StateHasChanged();
+            }
+            
+            // Register window resize event to ensure toggle button stays visible
+            await JSRuntime.InvokeVoidAsync("eval", @"
+                window.addEventListener('resize', function() {
+                    // Ensure navbar-toggler is visible on mobile
+                    if (window.innerWidth < 769) {
+                        document.querySelector('.navbar-toggler').style.display = 'block';
+                    } else {
+                        document.querySelector('.navbar-toggler').style.display = 'none';
+                    }
+                });
+            ");
+        }
+    }
 
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+    
+    private void CloseNavMenuOnMobile()
+    {
+        // Only close the menu if we're on mobile (screen width < 769px)
+        JSRuntime.InvokeVoidAsync("eval", @"
+            if (window.innerWidth < 769) {
+                // We're on mobile, set the collapseNavMenu directly instead of clicking
+                // Ensures the button remains visible
+                setTimeout(function() {
+                    document.querySelector('.navbar-toggler').style.display = 'block';
+                }, 100);
+            }
+        ");
+        
+        // Set the state directly rather than toggling
+        if (collapseNavMenu == false) {
+            collapseNavMenu = true;
+            StateHasChanged();
+        }
     }
 }

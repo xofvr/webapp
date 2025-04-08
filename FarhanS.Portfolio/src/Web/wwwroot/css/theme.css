@@ -1,0 +1,177 @@
+/* Theme variables for light and dark mode */
+:root {
+    /* Light Theme Variables with premium Apple-inspired colors */
+    --primary-color: #3a9e7e; /* Viridian green */
+    --primary-hover: #2c8268;
+    --accent-color: #9c5bc8; /* Purple accent */
+    --secondary-color: #6c757d;
+    --background-color: #ffffff;
+    --section-alt-bg: #f8f9fa;
+    --card-bg-color: #ffffff;
+    --text-color: #333333;
+    --text-muted: #6c757d;
+    --border-color: #e0e0e0;
+    --shadow-color: rgba(0, 0, 0, 0.06);
+    --link-color: #3a9e7e;
+    --header-bg: #ffffff;
+    --footer-bg: #f8f9fa;
+    --footer-text: #333333;
+    --hover-bg: #f0f4f1;
+    --divider-color: #e5e9ec;
+    --gradient-start: #3a9e7e;
+    --gradient-end: #56c3a0;
+    --badge-bg: #e6f7f0;
+    --badge-text: #2c8268;
+    --card-highlight: rgba(58, 158, 126, 0.1);
+    --accent-gradient-start: #9c5bc8;
+    --accent-gradient-end: #bf7be4;
+    --location-badge-bg: #f0f0f0;
+    --location-badge-text: #555555;
+    
+    /* Navbar specific variables */
+    --navbar-bg: var(--header-bg);
+    --navbar-text: var(--text-color);
+    --navbar-hover: var(--primary-color);
+    --navbar-icon-brightness: 0.8;
+}
+
+[data-theme='dark'] {
+    /* Premium Dark Theme Variables based on Apple's guidelines */
+    --primary-color: #56c3a0; /* Brighter viridian for dark mode */
+    --primary-hover: #7ad0b3;
+    --accent-color: #bf7be4; /* Brighter purple for dark mode */
+    --secondary-color: #a0aec0;
+    --background-color: #121212; /* Dark gray instead of pure black per Apple guidelines */
+    --section-alt-bg: #1a1a1a;
+    --card-bg-color: #1e1e1e;
+    --text-color: #f0f0f0;
+    --text-muted: #b3b3b3;
+    --border-color: #333333;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --link-color: #7ad0b3;
+    --header-bg: #1a1a1a;
+    --footer-bg: #1a1a1a;
+    --footer-text: #e0e0e0;
+    --hover-bg: #2c2c2c;
+    --divider-color: #333333;
+    --gradient-start: #3a9e7e;
+    --gradient-end: #56c3a0;
+    --badge-bg: #253b33;
+    --badge-text: #7ad0b3;
+    --card-highlight: rgba(86, 195, 160, 0.15);
+    --accent-gradient-start: #9c5bc8;
+    --accent-gradient-end: #bf7be4;
+    --location-badge-bg: #2c2c2c;
+    --location-badge-text: #d0d0d0;
+    
+    /* Navbar specific variables */
+    --navbar-bg: var(--header-bg);
+    --navbar-text: var(--text-color);
+    --navbar-hover: var(--primary-color);
+    --navbar-icon-brightness: 2;
+}
+
+/* General theme application */
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Text colors */
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+/* Card styles - fixing dark mode for all card types */
+.card,
+.experience-card,
+.education-card,
+.skill-card,
+.contact-card,
+.social-card {
+    background-color: var(--card-bg-color);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+/* Navbar theme styles */
+.navbar {
+    background-color: var(--navbar-bg);
+    box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.navbar-light .navbar-brand,
+.navbar-light .navbar-nav .nav-link {
+    color: var(--navbar-text);
+}
+
+.navbar-light .navbar-nav .nav-link:hover,
+.navbar-light .navbar-nav .nav-link:focus {
+    color: var(--navbar-hover);
+}
+
+.navbar-light .navbar-toggler-icon {
+    filter: brightness(var(--navbar-icon-brightness, 0.8));
+}
+
+/* Theme toggle button */
+.theme-toggle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    color: white;
+    font-size: 1.2rem;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.theme-toggle:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.theme-toggle:active {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Footer theme */
+.footer {
+    background-color: var(--footer-bg);
+    color: var(--footer-text);
+}
+
+/* Section alternating backgrounds */
+.section-alt-bg {
+    background-color: var(--section-alt-bg);
+}
+
+/* Location badge style */
+.location-badge {
+    background-color: var(--location-badge-bg);
+    color: var(--location-badge-text);
+    padding: 0.25em 0.75em;
+    border-radius: 20px;
+    font-size: 0.8rem;
+}
+
+/* Better dark mode visibility for Bootstrap components */
+[data-theme="dark"] .shadow-sm {
+    box-shadow: 0 .125rem .25rem var(--shadow-color) !important;
+}
+
+/* Fix for inconsistent text colors in Bootstrap */
+[data-theme="dark"] .text-dark {
+    color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .text-muted {
+    color: var(--text-muted) !important;
+}

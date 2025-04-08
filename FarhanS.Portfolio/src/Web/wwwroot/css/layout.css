@@ -1,0 +1,114 @@
+/* MainLayout component styles */
+.navbar {
+    padding: 15px 0;
+    background-color: var(--navbar-bg);
+    color: var(--navbar-text);
+    position: fixed;  /* Fix the navbar to the top */
+    top: 0;
+    width: 100%;
+    z-index: 1001;    /* Ensure it's above other elements */
+    box-shadow: 0 2px 10px var(--shadow-color);
+}
+
+.nav-link {
+    margin: 0 8px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    color: var(--navbar-text);
+}
+
+.navbar-brand {
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    color: var(--navbar-text);
+}
+
+.nav-link:hover {
+    color: var(--primary-color);
+}
+
+main {
+    padding-top: 76px; /* Adjust for fixed navbar */
+    min-height: calc(100vh - 76px);
+}
+
+/* Loading container */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: var(--text-color);
+}
+
+/* Social icons in navbar */
+.navbar .bi {
+    font-size: 1.2rem;
+}
+
+/* Custom section styles */
+.section-title {
+    font-weight: 700;
+    margin-bottom: 2rem;
+    position: relative;
+    display: inline-block;
+}
+
+.section-title:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    height: 3px;
+    width: 70px;
+    background-color: var(--primary-color);
+}
+
+/* Mobile navbar adjustment */
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        background-color: var(--navbar-bg);
+        padding: 1rem;
+        border-radius: 0.25rem;
+        box-shadow: 0 4px 6px var(--shadow-color);
+        margin-top: 0.5rem;
+    }
+    
+    .navbar-nav .nav-item {
+        padding: 0.5rem 0;
+    }
+    
+    /* Enhanced styling for mobile nav menu */
+    .nav-scrollable:not(.collapse) {
+        display: flex !important;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: var(--navbar-bg);
+        padding: 1rem;
+        box-shadow: 0 4px 10px var(--shadow-color);
+        z-index: 1000;
+    }
+}
+
+/* Fix for sidebar navigation visibility in all themes */
+.top-row.ps-3.navbar.navbar-dark {
+    background-color: var(--navbar-bg); 
+}
+
+.sidebar {
+    background-image: none;
+    background-color: var(--card-bg-color);
+}
+
+.nav-item ::deep a {
+    color: var(--navbar-text);
+}
+
+.nav-item ::deep a.active, 
+.nav-item ::deep a:hover {
+    background-color: var(--primary-color);
+    color: white;
+}

@@ -1,0 +1,128 @@
+{
+  "fullName": "Farhan Shakeel",
+  "title": "Software Developer",
+  "summary": "Passionate software developer with expertise in .NET technologies, web development, and database systems including MySQL.",
+  "profileImageUrl": "images/profile.jpg",
+  "profileUrl": "https://www.linkedin.com/in/m-shakeel014/",
+  "experiences": [
+    {
+      "company": "Current Company",
+      "title": "Software Developer",
+      "duration": "2022 - Present",
+      "description": "Working on full-stack development with .NET Core, Blazor, and MySQL database solutions. Developing and maintaining web applications with modern architecture patterns.",
+      "location": "Remote",
+      "startDate": "2022-01-01",
+      "endDate": null
+    },
+    {
+      "company": "Previous Company",
+      "title": "Junior Developer",
+      "duration": "2020 - 2022",
+      "description": "Developed and maintained database-driven web applications. Worked with MySQL for data storage and retrieval, implementing efficient database design patterns.",
+      "location": "On-site",
+      "startDate": "2020-01-01",
+      "endDate": "2021-12-31"
+    }
+  ],
+  "education": [
+    {
+      "institution": "University Name",
+      "degree": "Bachelor's Degree",
+      "field": "Computer Science",
+      "duration": "2016 - 2020",
+      "startDate": "2016-09-01",
+      "endDate": "2020-05-31"
+    }
+  ],
+  "skills": [
+    {
+      "name": "C#",
+      "category": "Languages",
+      "endorsements": 12
+    },
+    {
+      "name": "JavaScript",
+      "category": "Languages",
+      "endorsements": 10
+    },
+    {
+      "name": "TypeScript",
+      "category": "Languages",
+      "endorsements": 8
+    },
+    {
+      "name": "HTML/CSS",
+      "category": "Languages",
+      "endorsements": 9
+    },
+    {
+      "name": "SQL",
+      "category": "Languages",
+      "endorsements": 11
+    },
+    {
+      "name": ".NET Core",
+      "category": "Frameworks",
+      "endorsements": 11
+    },
+    {
+      "name": "Blazor",
+      "category": "Frameworks",
+      "endorsements": 9
+    },
+    {
+      "name": "ASP.NET MVC",
+      "category": "Frameworks",
+      "endorsements": 10
+    },
+    {
+      "name": "Entity Framework",
+      "category": "Frameworks",
+      "endorsements": 8
+    },
+    {
+      "name": "Bootstrap",
+      "category": "Frameworks",
+      "endorsements": 7
+    },
+    {
+      "name": "MySQL",
+      "category": "Databases",
+      "endorsements": 12
+    },
+    {
+      "name": "SQL Server",
+      "category": "Databases",
+      "endorsements": 9
+    },
+    {
+      "name": "MongoDB",
+      "category": "Databases",
+      "endorsements": 6
+    },
+    {
+      "name": "Git",
+      "category": "Tools",
+      "endorsements": 10
+    },
+    {
+      "name": "Docker",
+      "category": "Tools",
+      "endorsements": 7
+    },
+    {
+      "name": "Azure",
+      "category": "Cloud",
+      "endorsements": 8
+    },
+    {
+      "name": "CI/CD",
+      "category": "DevOps",
+      "endorsements": 7
+    }
+  ],
+  "certifications": [
+    "Microsoft Certified: Azure Developer Associate",
+    "MySQL Database Administrator"
+  ]
+}
