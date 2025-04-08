@@ -1,232 +1,145 @@
 /**
  * Service Worker Manager for FarhanS.Portfolio
- * This script handles service worker registration, updates, and notifications
+ * 
+ * This script checks for service worker updates and handles refreshing the application
+ * when a new version is deployed, solving the caching issues.
  */
 
-// Store for app version info
-let currentVersion = {
-    version: null,
-    timestamp: null
-};
-
 // Register and manage the service worker
-class ServiceWorkerManager {
-    constructor() {
-        this.updateAvailable = false;
-        this.registration = null;
-        this.refreshing = false;
-
-        // Check if the page is being reloaded due to an update
-        window.addEventListener('beforeunload', () => {
-            this.refreshing = true;
-        });
-
-        // Set up navigation check for detecting update reloads
-        window.addEventListener('load', () => {
-            // If there's a controller, this isn't the first load
-            if (navigator.serviceWorker.controller) {
-                // If we're not refreshing, check for updates
-                if (!this.refreshing) {
-                    this.checkForUpdates();
-                }
-            }
-        });
-
-        // Initialize the service worker
-        this.init();
-    }
-
-    // Initialize the service worker
-    async init() {
-        if (!('serviceWorker' in navigator)) {
-            console.log('Service workers are not supported in this browser');
-            return;
-        }
-
+if ('serviceWorker' in navigator) {
+    // Register the service worker
+    window.addEventListener('load', async function() {
         try {
-            // Register the service worker
-            this.registration = await navigator.serviceWorker.register('/service-worker.js');
-            console.log('Service Worker registered with scope:', this.registration.scope);
+            // Attempt to register or update the service worker
+            const registration = await navigator.serviceWorker.register('/service-worker.js', {
+                updateViaCache: 'none' // Disable HTTP cache for service worker script
+            });
 
-            // Set up update handler
-            this.setupUpdateHandler();
-
-            // Check for any waiting service workers on load
-            if (this.registration.waiting) {
-                this.showUpdateNotification();
-            }
-        } catch (error) {
-            console.error('Service Worker registration failed:', error);
-        }
-    }
-
-    // Setup the update handler to listen for updates
-    setupUpdateHandler() {
-        // Listen for new service workers installing
-        this.registration.addEventListener('updatefound', () => {
-            const newWorker = this.registration.installing;
+            console.log('Service worker registered with scope:', registration.scope);
             
-            console.log('New service worker installing...');
+            // Check for service worker updates periodically (every 30 minutes)
+            checkForUpdates(registration);
+            setInterval(() => checkForUpdates(registration), 30 * 60 * 1000);
             
-            newWorker.addEventListener('statechange', () => {
-                // When the service worker is installed
-                if (newWorker.state === 'installed') {
-                    // Only show the update notification if there's an existing controller
-                    if (navigator.serviceWorker.controller) {
-                        console.log('New service worker installed, update available');
-                        this.showUpdateNotification();
-                    }
+            // Handle controller change events (when a new service worker takes control)
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                console.log('New service worker is controlling the page');
+                // Don't reload immediately if the user is in the middle of something
+                if (document.visibilityState === 'visible' && !window.isUpdating) {
+                    window.isUpdating = true;
+                    showUpdateNotification();
                 }
             });
-        });
-
-        // Listen for controller change events
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-            // Prevent infinite reloads
-            if (!this.refreshing) {
-                console.log('New service worker activated, reloading page...');
-                this.refreshing = true;
-                window.location.reload();
-            }
-        });
-
-        // Setup message handler
-        navigator.serviceWorker.addEventListener('message', (event) => {
-            if (event.data && event.data.type === 'VERSION_INFO') {
-                currentVersion = event.data.version;
-                console.log('Current app version:', currentVersion);
-            }
-        });
-    }
-
-    // Check for updates by comparing versions
-    async checkForUpdates() {
-        if (!this.registration) return;
-
-        try {
-            // Force an update check
-            await this.registration.update();
-            console.log('Service worker update check completed');
         } catch (error) {
-            console.error('Failed to check for service worker updates:', error);
+            console.error('Service worker registration failed:', error);
+        }
+    });
+    
+    // Check for updates from the server
+    async function checkForUpdates(registration) {
+        try {
+            // Force update check by bypassing the browser's update check interval
+            await registration.update();
+            
+            // If we have a waiting service worker, it means there's an update available
+            if (registration.waiting) {
+                console.log('New service worker waiting to activate');
+                notifyUpdateReady(registration.waiting);
+            }
+        } catch (error) {
+            console.error('Error checking for service worker updates:', error);
         }
     }
-
-    // Show update notification to the user
-    showUpdateNotification() {
-        this.updateAvailable = true;
-        
+    
+    // Notify about an update ready to be applied
+    function notifyUpdateReady(worker) {
+        // Check the current version against the waiting service worker version
+        if (navigator.serviceWorker.controller) {
+            const messageChannel = new MessageChannel();
+            
+            // Listen for the version information from the service worker
+            messageChannel.port1.onmessage = (event) => {
+                if (event.data && event.data.version) {
+                    const newVersion = event.data.version;
+                    console.log('New version available:', newVersion);
+                    showUpdateNotification();
+                }
+            };
+            
+            // Ask the service worker for its version
+            worker.postMessage({
+                type: 'CHECK_VERSION'
+            }, [messageChannel.port2]);
+        }
+    }
+    
+    // Show a user-friendly update notification
+    function showUpdateNotification() {
         // Create update notification element
-        const updateNotification = document.createElement('div');
-        updateNotification.className = 'update-notification';
-        updateNotification.innerHTML = `
-            <div class="update-content">
-                <span>A new version is available!</span>
-                <button id="update-app-btn" class="update-btn">Update now</button>
-                <button id="dismiss-update-btn" class="dismiss-btn">Later</button>
-            </div>
-        `;
-        
-        // Style the notification
-        const style = document.createElement('style');
-        style.textContent = `
-            .update-notification {
+        if (!document.getElementById('update-notification')) {
+            const notification = document.createElement('div');
+            notification.id = 'update-notification';
+            notification.style.cssText = `
                 position: fixed;
                 bottom: 20px;
                 left: 50%;
                 transform: translateX(-50%);
-                background-color: var(--primary-color);
+                background-color: #007bff;
                 color: white;
                 padding: 12px 20px;
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                border-radius: 4px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
                 z-index: 9999;
                 display: flex;
                 align-items: center;
-                max-width: 90%;
-                width: auto;
-                animation: slide-up 0.3s ease-out;
+                justify-content: space-between;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                max-width: 400px;
+                width: 90%;
+            `;
+            
+            notification.innerHTML = `
+                <span>A new version is available!</span>
+                <div>
+                    <button id="update-later" style="background: transparent; border: 1px solid white; color: white; margin-right: 8px; padding: 6px 12px; border-radius: 4px; cursor: pointer;">Later</button>
+                    <button id="update-now" style="background: white; border: none; color: #007bff; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">Update Now</button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Handle update actions
+            document.getElementById('update-now').addEventListener('click', () => {
+                // Apply the update and reload the page
+                applyUpdate();
+                notification.remove();
+            });
+            
+            document.getElementById('update-later').addEventListener('click', () => {
+                // Hide notification until next check
+                notification.remove();
+            });
+        }
+    }
+    
+    // Apply the pending update
+    function applyUpdate() {
+        navigator.serviceWorker.ready.then(registration => {
+            if (registration.waiting) {
+                // Tell the waiting service worker to take control
+                registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+            } else {
+                // If there's no waiting worker, just reload to get fresh content
+                window.location.reload();
             }
-
-            .update-content {
-                display: flex;
-                align-items: center;
-                gap: 15px;
-            }
-
-            .update-btn {
-                background-color: white;
-                color: var(--primary-color);
-                border: none;
-                padding: 8px 16px;
-                border-radius: 4px;
-                font-weight: 500;
-                cursor: pointer;
-                transition: all 0.2s ease;
-            }
-
-            .update-btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            }
-
-            .dismiss-btn {
-                background: transparent;
-                color: white;
-                border: 1px solid white;
-                padding: 8px 16px;
-                border-radius: 4px;
-                font-weight: 500;
-                cursor: pointer;
-                transition: all 0.2s ease;
-            }
-
-            .dismiss-btn:hover {
-                background-color: rgba(255, 255, 255, 0.1);
-            }
-
-            @keyframes slide-up {
-                from {
-                    transform: translate(-50%, 100%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translate(-50%, 0);
-                    opacity: 1;
-                }
-            }
-
-            [data-theme='dark'] .update-btn {
-                background-color: #1a1a1a;
-                color: var(--primary-color);
-            }
-        `;
-        
-        // Add the notification and styles to the document
-        document.head.appendChild(style);
-        document.body.appendChild(updateNotification);
-        
-        // Add event listeners to buttons
-        document.getElementById('update-app-btn').addEventListener('click', () => {
-            this.applyUpdate();
-            updateNotification.remove();
-        });
-        
-        document.getElementById('dismiss-update-btn').addEventListener('click', () => {
-            updateNotification.remove();
         });
     }
-
-    // Apply the update by skipping waiting
-    applyUpdate() {
-        if (!this.registration || !this.registration.waiting) return;
-        
-        // Send skip waiting message to the waiting service worker
-        this.registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-    }
+    
+    // Check for unresolved communication between client and service worker
+    setInterval(() => {
+        if (navigator.serviceWorker.controller && !navigator.serviceWorker.controller.scriptURL.includes(window.location.origin)) {
+            // If service worker is from a different origin, reload to reestablish connection
+            window.location.reload();
+        }
+    }, 60 * 60 * 1000); // Check every hour
 }
-
-// Initialize the service worker manager when the page loads
-window.addEventListener('load', () => {
-    window.swManager = new ServiceWorkerManager();
-});

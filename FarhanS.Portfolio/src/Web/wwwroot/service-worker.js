@@ -2,11 +2,11 @@
 // It provides offline support and caching for better performance
 
 // Increment this version when you update your service worker
-// Added timestamp to automatically refresh on each deployment
-const CACHE_VERSION = 'v1.0.1';
-// Use dynamic timestamp to force cache refresh on new deployments
-const BUILD_TIMESTAMP = new Date().getTime();
-const CACHE_NAME = `farhans-portfolio-${CACHE_VERSION}-${BUILD_TIMESTAMP}`;
+const CACHE_VERSION = 'v1.0.2';
+
+// Use a fixed CACHE_NAME for each deployment
+// Will be updated when a new version is deployed
+const CACHE_NAME = `farhans-portfolio-${CACHE_VERSION}`;
 
 // Assets to cache on install
 // Add or remove assets based on your application's needs
@@ -58,6 +58,22 @@ self.addEventListener('activate', event => {
 
 // Fetch event - serve from cache or network with improved refresh logic
 self.addEventListener('fetch', event => {
+  // Define API endpoints for special handling
+  const apiEndpoints = [
+    'api.farhans-portfolio.com',
+    'js.monitor.azure.com'
+  ];
+  
+  // Handle API requests - use network first, fall back to cache
+  if (apiEndpoints.some(endpoint => event.request.url.includes(endpoint))) {
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        return caches.match(event.request);
+      })
+    );
+    return;
+  }
+
   // Check for service-worker-assets.js which contains file hashes
   if (event.request.url.includes('service-worker-assets.js')) {
     // Always get the latest assets manifest from the network
@@ -159,8 +175,7 @@ self.addEventListener('message', event => {
   if (event.data && event.data.type === 'CHECK_VERSION') {
     // Respond with current cache version
     event.ports[0].postMessage({
-      version: CACHE_VERSION,
-      timestamp: BUILD_TIMESTAMP
+      version: CACHE_VERSION
     });
   } else if (event.data && event.data.type === 'SKIP_WAITING') {
     // Skip waiting and activate immediately when requested
