@@ -1,25 +1,25 @@
 /* MainLayout component styles */
 .navbar {
     padding: 15px 0;
-    background-color: var(--navbar-bg) !important;
-    color: var(--navbar-text) !important;
+    background-color: var(--navbar-bg);
+    color: var(--navbar-text);
 }
 
 .nav-link {
     margin: 0 8px;
     font-weight: 500;
     transition: color 0.3s ease;
-    color: var(--navbar-text) !important;
+    color: var(--navbar-text);
 }
 
 .navbar-brand {
     font-weight: bold;
     letter-spacing: 0.5px;
-    color: var(--navbar-text) !important;
+    color: var(--navbar-text);
 }
 
 .nav-link:hover {
-    color: var(--primary-color) !important;
+    color: var(--primary-color);
 }
 
 main {
@@ -75,45 +75,22 @@ main {
     }
 }
 
-/* Dark mode specific layout styles */
-[data-theme="dark"] .navbar {
-    background-color: var(--navbar-bg) !important;
-}
-
-[data-theme="dark"] .navbar-light .navbar-brand,
-[data-theme="dark"] .navbar-light .nav-link {
-    color: var(--navbar-text) !important;
-}
-
-[data-theme="dark"] .navbar-toggler-icon,
-.navbar-light .navbar-toggler-icon {
-    filter: brightness(var(--navbar-icon-brightness, 0.8));
-}
-
-[data-theme="light"] .navbar-toggler-icon {
-    filter: brightness(0.8);
-}
-
 /* Fix for sidebar navigation visibility in all themes */
 .top-row.ps-3.navbar.navbar-dark {
-    background-color: var(--navbar-bg) !important; 
+    background-color: var(--navbar-bg); 
 }
 
 .sidebar {
-    background-image: none !important;
-    background-color: var(--card-bg-color) !important;
+    background-image: none;
+    background-color: var(--card-bg-color);
 }
 
 .nav-item ::deep a {
-    color: var(--navbar-text) !important;
+    color: var(--navbar-text);
 }
 
 .nav-item ::deep a.active, 
 .nav-item ::deep a:hover {
-    background-color: var(--primary-color) !important;
-    color: white !important;
-}
-
-[data-theme="dark"] .shadow-sm {
-    box-shadow: 0 .125rem .25rem var(--shadow-color) !important;
+    background-color: var(--primary-color);
+    color: white;
 }

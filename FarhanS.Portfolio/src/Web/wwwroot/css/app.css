@@ -57,6 +57,7 @@
     --accent-gradient-end: #bf7be4;
 }
 
+/* Base typography and layout styles */
 html, body {
     font-family: 'Poppins', sans-serif;
     color: var(--text-color);
@@ -143,6 +144,8 @@ a:hover {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
 }
 
 .main-header {
@@ -252,19 +255,13 @@ a:hover {
     font-size: 1.1rem;
 }
 
-/* Theme Toggle */
-.theme-toggle {
-    display: flex;
-    align-items: center;
-}
-
-/* Enhanced theme toggle button with better visibility in both modes */
+/* Theme Toggle - Using consistent .theme-btn class */
 .theme-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
     color: white;
     font-size: 1.2rem;
@@ -272,13 +269,27 @@ a:hover {
     cursor: pointer;
     transition: all 0.3s ease;
     border: none;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     margin: 0 auto;
+    position: relative;
+    line-height: 1;
+    padding: 0;
+}
+
+.theme-btn i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    top: 0;
+    left: 0;
 }
 
 .theme-btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .theme-btn:active {
@@ -290,19 +301,19 @@ a:hover {
 .theme-btn::before {
     content: '';
     position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
     z-index: -1;
-    opacity: 0.2;
+    opacity: 0.3;
     transition: opacity 0.3s ease;
 }
 
 .theme-btn:hover::before {
-    opacity: 0.5;
+    opacity: 0.6;
 }
 
 /* Section Styling */
@@ -1223,6 +1234,11 @@ thead th {
     background-color: var(--footer-bg);
     color: var(--footer-text);
     padding: 2rem 0;
+    width: 100%;
+    margin-top: auto;
+    left: 0;
+    right: 0;
+    border-top: 1px solid var(--border-color);
 }
 
 /* Ensure all text in footer is visible */

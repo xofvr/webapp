@@ -1,4 +1,6 @@
-﻿<div class="navbar-container">
+﻿@inject IJSRuntime JSRuntime
+
+<div class="navbar-container">
     <div class="navbar-brand-container">
         <a class="navbar-brand" href="">Farhan S.</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -38,9 +40,16 @@
 </div>
 
 @code {
-    private bool collapseNavMenu = true;
+    private bool collapseNavMenu = false; // Set to false by default to show the nav menu
 
+    // On mobile only
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    protected override void OnInitialized()
+    {
+        // Default to not collapsed
+        collapseNavMenu = false;
+    }
 
     private void ToggleNavMenu()
     {
