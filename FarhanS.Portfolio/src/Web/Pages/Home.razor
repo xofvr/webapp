@@ -5,17 +5,17 @@
 @inject FarhanS.Portfolio.Web.Services.ILinkedInService LinkedInService
 @inject FarhanS.Portfolio.Web.Services.IContactService ContactService
 
-<PageTitle>@(Profile?.FullName ?? "Farhan S.") - Data Scientist & Software Engineer</PageTitle>
+<PageTitle>@(Profile?.FullName ?? "Farhan S.") - Software Engineer with Data Science Experience</PageTitle>
 
-<!-- Hero section -->
-<div class="hero-section py-5">
+<!-- Hero section with padding to account for fixed navbar -->
+<div class="hero-section py-5" style="padding-top: 6rem;">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6">
                 <h1 class="display-4 fw-bold">@(Profile?.FullName ?? "Farhan S.")</h1>
-                <h2 class="text-primary">@(Profile?.Title ?? "Data Scientist & Software Engineer")</h2>
+                <h2 class="text-primary">@(Profile?.Title ?? "Software Engineer with Data Science Experience")</h2>
                 <p class="lead my-4">
-                    Transforming data into insights and building impactful solutions with cutting-edge technologies.
+                    Passionate about building impactful solutions with cutting-edge technologies.
                 </p>
                 <div class="d-flex gap-3">
                     <a href="#contact" class="btn btn-primary px-4 py-2">Get In Touch</a>
@@ -23,7 +23,7 @@
                 </div>
             </div>
             <div class="col-lg-6 text-center">
-                <img src="images/profile.jpg" alt="Farhan S." class="img-fluid rounded-circle profile-image shadow-lg" 
+                <img src="images/profile.jpeg" alt="Farhan S." class="img-fluid rounded-circle profile-image shadow-lg" 
                      style="max-width: 300px;" onerror="this.onerror=null; this.src='images/profile-placeholder.jpg';">
             </div>
         </div>
@@ -35,20 +35,46 @@
     <ItemContent>
         @if (section == "about")
         {
+            <!-- About Section -->
             <section id="about" class="py-5">
                 <div class="container">
-                    <h2 class="section-title">About Me</h2>
-                    <div class="row">
-                        <div class="col-lg-8 offset-lg-2">
+                    <div class="row mb-4">
+                        <div class="col-lg-8 mx-auto text-center">
+                            <h2 class="section-title mb-3">About Me</h2>
+                            <div class="section-divider mb-4"></div>
                             <p class="lead">
-                                @(Profile?.Summary ?? "I blend data science expertise with software engineering skills to create intelligent, data-driven solutions.")
+                                Final-year Computer Science student at UWE Bristol with industry experience in both software engineering and data science.
                             </p>
-                            <p>
-                                With a unique background that spans both data science and software development, I bring a versatile perspective to 
-                                technical challenges. I specialize in transforming complex data into actionable insights while building robust, 
-                                scalable applications. My approach combines analytical rigor with software engineering best practices to deliver 
-                                solutions that are not only data-intelligent but also intuitive and accessible to users.
-                            </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-8 mx-auto">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body p-4">
+                                    <p>
+                                        I specialize in building intelligent applications that bridge software engineering and data science. With professional 
+                                        experience as a Data Scientist at Malvern Panalytical, I've developed ML workflows for scientific instruments and 
+                                        implemented scalable solutions for analytics and generative AI.
+                                    </p>
+                                    <p>
+                                        My technical foundation includes full-stack development with .NET/Blazor, Django, and Flask, complemented by expertise in 
+                                        machine learning, Azure cloud services, and containerization. I excel at building production-ready systems that 
+                                        deliver real business value, with experience in both web application development and advanced AI applications.
+                                    </p>
+                                    <p>
+                                        As someone who thrives at the intersection of multiple disciplines, I'm particularly skilled at translating between 
+                                        technical teams – helping domain experts (physicists, chemists, engineers) turn their expertise into working 
+                                        software solutions. My final year project combines these strengths – building a hybrid CNN-transformer to make 
+                                        CFD simulations faster and more accurate.
+                                    </p>
+                                    <div class="mt-4">
+                                        <a href="#contact" class="btn btn-primary me-2">Get In Touch</a>
+                                        <a href="https://www.linkedin.com/in/m-shakeel014/" target="_blank" rel="noopener" class="btn btn-outline-primary">
+                                            <i class="bi bi-linkedin me-1"></i> LinkedIn
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -93,222 +119,339 @@
         }
         else if (section == "skills")
         {
+            <!-- Skills Section -->
             <section id="skills" class="py-5">
                 <div class="container">
-                    <h2 class="section-title">Skills & Expertise</h2>
-                    <div class="row row-cols-1 row-cols-md-3 g-4">
-                        @{
-                            var skillCategories = Profile?.Skills
-                                ?.GroupBy(s => s.Category)
-                                ?.OrderBy(g => g.Key)
-                                ?.ToList();
-                                
-                            if (skillCategories != null && skillCategories.Any())
-                            {
-                                foreach (var category in skillCategories)
-                                {
-                                    <div class="col">
-                                        <div class="card skill-card h-100 shadow-sm">
-                                            <div class="card-body">
-                                                <h3 class="card-title h5">
-                                                    <i class="bi @GetCategoryIcon(category.Key) me-2"></i>@category.Key
-                                                </h3>
-                                                <div class="mt-3">
-                                                    @foreach (var skill in category.OrderByDescending(s => s.Endorsements))
-                                                    {
-                                                        <span class="badge bg-primary me-1 mb-1">@skill.Name</span>
-                                                    }
-                                                </div>
-                                            </div>
-                                        </div>
+                    <div class="row mb-4">
+                        <div class="col-lg-8 mx-auto text-center">
+                            <h2 class="section-title mb-3">Technical Skills</h2>
+                            <div class="section-divider mb-4"></div>
+                            <p class="lead">A comprehensive overview of my technical capabilities</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-4">
+                        <!-- Software Development -->
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span class="skill-icon bg-primary text-white me-3">
+                                            <i class="bi bi-code-square"></i>
+                                        </span>
+                                        <h5 class="card-title mb-0">Software Development</h5>
                                     </div>
-                                }
-                            }
-                            else
-                            {
-                                <div class="col-12 text-center">
-                                    <p>Skills data is being loaded...</p>
+                                    <ul class="list-unstyled">
+                                        <li><i class="bi bi-check-circle-fill text-primary me-2"></i>C#, .NET, Blazor</li>
+                                        <li><i class="bi bi-check-circle-fill text-primary me-2"></i>Python, Django, Flask</li>
+                                        <li><i class="bi bi-check-circle-fill text-primary me-2"></i>JavaScript, TypeScript</li>
+                                        <li><i class="bi bi-check-circle-fill text-primary me-2"></i>RESTful API Design</li>
+                                        <li><i class="bi bi-check-circle-fill text-primary me-2"></i>Git, CI/CD</li>
+                                        <li><i class="bi bi-check-circle-fill text-primary me-2"></i>Microservices Architecture</li>
+                                    </ul>
                                 </div>
-                                
-                                <!-- Default skills as fallback -->
-                                <div class="col">
-                                    <div class="card skill-card h-100 shadow-sm">
-                                        <div class="card-body">
-                                            <h3 class="card-title h5"><i class="bi bi-code-slash me-2"></i>Languages</h3>
-                                            <div class="mt-3">
-                                                <span class="badge bg-primary me-1 mb-1">Python</span>
-                                                <span class="badge bg-primary me-1 mb-1">R</span>
-                                                <span class="badge bg-primary me-1 mb-1">C#</span>
-                                                <span class="badge bg-primary me-1 mb-1">JavaScript</span>
-                                                <span class="badge bg-primary me-1 mb-1">SQL</span>
-                                                <span class="badge bg-primary me-1 mb-1">HTML/CSS</span>
-                                            </div>
-                                        </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Data Science & AI -->
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span class="skill-icon bg-primary text-white me-3">
+                                            <i class="bi bi-braces"></i>
+                                        </span>
+                                        <h5 class="card-title mb-0">Data Science & AI</h5>
                                     </div>
+                                    <ul class="list-unstyled">
+                                        <li><i class="bi bi-check-circle-fill text-primary me-2"></i>Machine Learning</li>
+                                        <li><i class="bi bi-check-circle-fill text-primary me-2"></i>Deep Learning (PyTorch)</li>
+                                        <li><i class="bi bi-check-circle-fill text-primary me-2"></i>NLP & Transformers</li>
+                                        <li><i class="bi bi-check-circle-fill text-primary me-2"></i>Vector Databases</li>
+                                        <li><i class="bi bi-check-circle-fill text-primary me-2"></i>Pandas, NumPy, SciPy</li>
+                                        <li><i class="bi bi-check-circle-fill text-primary me-2"></i>Data Visualization</li>
+                                    </ul>
                                 </div>
-                                <div class="col">
-                                    <div class="card skill-card h-100 shadow-sm">
-                                        <div class="card-body">
-                                            <h3 class="card-title h5"><i class="bi bi-bar-chart me-2"></i>Data Science</h3>
-                                            <div class="mt-3">
-                                                <span class="badge bg-primary me-1 mb-1">Machine Learning</span>
-                                                <span class="badge bg-primary me-1 mb-1">Data Analysis</span>
-                                                <span class="badge bg-primary me-1 mb-1">Pandas</span>
-                                                <span class="badge bg-primary me-1 mb-1">NumPy</span>
-                                                <span class="badge bg-primary me-1 mb-1">Scikit-learn</span>
-                                                <span class="badge bg-primary me-1 mb-1">TensorFlow</span>
-                                                <span class="badge bg-primary me-1 mb-1">Statistical Modeling</span>
-                                            </div>
-                                        </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Cloud & DevOps -->
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span class="skill-icon bg-primary text-white me-3">
+                                            <i class="bi bi-cloud"></i>
+                                        </span>
+                                        <h5 class="card-title mb-0">Cloud & DevOps</h5>
                                     </div>
+                                    <ul class="list-unstyled">
+                                        <li><i class="bi bi-check-circle-fill text-primary me-2"></i>Azure Cloud Services</li>
+                                        <li><i class="bi bi-check-circle-fill text-primary me-2"></i>Azure ML</li>
+                                        <li><i class="bi bi-check-circle-fill text-primary me-2"></i>Docker, Kubernetes</li>
+                                        <li><i class="bi bi-check-circle-fill text-primary me-2"></i>CI/CD Pipelines</li>
+                                        <li><i class="bi bi-check-circle-fill text-primary me-2"></i>Azure DevOps</li>
+                                        <li><i class="bi bi-check-circle-fill text-primary me-2"></i>Infrastructure as Code</li>
+                                    </ul>
                                 </div>
-                                <div class="col">
-                                    <div class="card skill-card h-100 shadow-sm">
-                                        <div class="card-body">
-                                            <h3 class="card-title h5"><i class="bi bi-braces me-2"></i>Frameworks</h3>
-                                            <div class="mt-3">
-                                                <span class="badge bg-primary me-1 mb-1">.NET Core</span>
-                                                <span class="badge bg-primary me-1 mb-1">Blazor</span>
-                                                <span class="badge bg-primary me-1 mb-1">ASP.NET</span>
-                                                <span class="badge bg-primary me-1 mb-1">Flask</span>
-                                                <span class="badge bg-primary me-1 mb-1">Django</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="card skill-card h-100 shadow-sm">
-                                        <div class="card-body">
-                                            <h3 class="card-title h5"><i class="bi bi-hdd me-2"></i>Databases</h3>
-                                            <div class="mt-3">
-                                                <span class="badge bg-primary me-1 mb-1">MySQL</span>
-                                                <span class="badge bg-primary me-1 mb-1">SQL Server</span>
-                                                <span class="badge bg-primary me-1 mb-1">MongoDB</span>
-                                                <span class="badge bg-primary me-1 mb-1">PostgreSQL</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="card skill-card h-100 shadow-sm">
-                                        <div class="card-body">
-                                            <h3 class="card-title h5"><i class="bi bi-cloud me-2"></i>Cloud & Tools</h3>
-                                            <div class="mt-3">
-                                                <span class="badge bg-primary me-1 mb-1">Azure</span>
-                                                <span class="badge bg-primary me-1 mb-1">Docker</span>
-                                                <span class="badge bg-primary me-1 mb-1">Git</span>
-                                                <span class="badge bg-primary me-1 mb-1">CI/CD</span>
-                                                <span class="badge bg-primary me-1 mb-1">Jupyter</span>
-                                                <span class="badge bg-primary me-1 mb-1">Power BI</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        }
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
         }
         else if (section == "projects")
         {
-            <section id="projects" class="py-5">
+            <!-- Projects Section -->
+            <section id="projects" class="py-5 bg-light">
                 <div class="container">
-                    <h2 class="section-title">Projects</h2>
-                    <div class="row row-cols-1 row-cols-md-2 g-4">
-                        
-                        <!-- Project 1: Data-Driven Web Application -->
-                        <div class="col">
-                            <div class="card project-card h-100 shadow-sm">
+                    <div class="row mb-4">
+                        <div class="col-lg-8 mx-auto text-center">
+                            <h2 class="section-title mb-3">Featured Projects</h2>
+                            <div class="section-divider mb-4"></div>
+                            <p class="lead">Showcasing my expertise in software engineering and data science</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-4">
+                        <!-- Hybrid CNN-Transformer for CFD -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 border-0 shadow-sm">
                                 <div class="card-body">
-                                    <h3 class="card-title h5">Predictive Analytics Dashboard</h3>
-                                    <span class="badge bg-primary mb-2">Data Science + Web Development</span>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span class="project-icon bg-primary text-white me-3">
+                                            <i class="bi bi-cpu"></i>
+                                        </span>
+                                        <h5 class="card-title mb-0">Hybrid CNN-Transformer for CFD Simulations</h5>
+                                    </div>
                                     <p class="card-text">
-                                        A full-stack web application that uses machine learning algorithms to predict business trends and visualizes 
-                                        insights through interactive dashboards built with .NET Core and React.
+                                        Developed a deep learning model combining CNN and transformer architectures to accelerate 
+                                        Computational Fluid Dynamics simulations by 15x while maintaining 98% accuracy. This work 
+                                        helps urban planners predict pollution dispersion around buildings.
                                     </p>
                                     <div class="mt-3">
-                                        <span class="badge bg-secondary me-1 mb-1">Python</span>
-                                        <span class="badge bg-secondary me-1 mb-1">C#</span>
-                                        <span class="badge bg-secondary me-1 mb-1">.NET Core</span>
-                                        <span class="badge bg-secondary me-1 mb-1">Machine Learning</span>
-                                        <span class="badge bg-secondary me-1 mb-1">SQL Server</span>
+                                        <span class="badge bg-primary me-1">PyTorch</span>
+                                        <span class="badge bg-primary me-1">Deep Learning</span>
+                                        <span class="badge bg-primary me-1">CFD</span>
+                                        <span class="badge bg-primary me-1">Transformers</span>
                                     </div>
-                                </div>
-                                <div class="card-footer bg-transparent border-0">
-                                    <a href="#" class="btn btn-sm btn-outline-primary disabled">View Project</a>
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- Project 2: Natural Language Processing API -->
-                        <div class="col">
-                            <div class="card project-card h-100 shadow-sm">
+                        <!-- Insurance Dashboard -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 border-0 shadow-sm">
                                 <div class="card-body">
-                                    <h3 class="card-title h5">Sentiment Analysis API</h3>
-                                    <span class="badge bg-primary mb-2">ML + API Development</span>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span class="project-icon bg-primary text-white me-3">
+                                            <i class="bi bi-graph-up"></i>
+                                        </span>
+                                        <h5 class="card-title mb-0">Insurance Analytics Dashboard</h5>
+                                    </div>
                                     <p class="card-text">
-                                        A RESTful API built with ASP.NET Core that leverages natural language processing models to analyze 
-                                        sentiment in customer feedback and social media data.
+                                        Built a comprehensive analytics dashboard for insurance data using .NET/Blazor, featuring 
+                                        real-time data visualization, predictive analytics for risk assessment, and secure user 
+                                        management. Implemented responsive design with Bootstrap for optimal UX.
                                     </p>
                                     <div class="mt-3">
-                                        <span class="badge bg-secondary me-1 mb-1">NLP</span>
-                                        <span class="badge bg-secondary me-1 mb-1">ASP.NET Core</span>
-                                        <span class="badge bg-secondary me-1 mb-1">Azure</span>
-                                        <span class="badge bg-secondary me-1 mb-1">TensorFlow</span>
-                                        <span class="badge bg-secondary me-1 mb-1">API Design</span>
+                                        <span class="badge bg-primary me-1">.NET</span>
+                                        <span class="badge bg-primary me-1">Blazor</span>
+                                        <span class="badge bg-primary me-1">C#</span>
+                                        <span class="badge bg-primary me-1">Data Visualization</span>
                                     </div>
-                                </div>
-                                <div class="card-footer bg-transparent border-0">
-                                    <a href="#" class="btn btn-sm btn-outline-primary disabled">View Project</a>
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- Project 3: Data Pipeline -->
-                        <div class="col">
-                            <div class="card project-card h-100 shadow-sm">
+                        <!-- Vector Database for AI Documentation -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 border-0 shadow-sm">
                                 <div class="card-body">
-                                    <h3 class="card-title h5">Automated ETL Pipeline</h3>
-                                    <span class="badge bg-primary mb-2">Data Engineering</span>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span class="project-icon bg-primary text-white me-3">
+                                            <i class="bi bi-robot"></i>
+                                        </span>
+                                        <h5 class="card-title mb-0">Context-Aware GPT Documentation Assistant</h5>
+                                    </div>
                                     <p class="card-text">
-                                        A robust data processing pipeline built with .NET and Python that automates the extraction, transformation, 
-                                        and loading of large datasets from multiple sources to a centralized data warehouse.
+                                        Created a vector database-powered documentation chatbot system that improved information 
+                                        retrieval accuracy by 40%. Implemented embedding generation pipeline and semantic search 
+                                        capabilities to provide context-aware responses for scientific instrument documentation.
                                     </p>
                                     <div class="mt-3">
-                                        <span class="badge bg-secondary me-1 mb-1">ETL</span>
-                                        <span class="badge bg-secondary me-1 mb-1">Python</span>
-                                        <span class="badge bg-secondary me-1 mb-1">.NET</span>
-                                        <span class="badge bg-secondary me-1 mb-1">Azure Data Factory</span>
-                                        <span class="badge bg-secondary me-1 mb-1">SQL</span>
+                                        <span class="badge bg-primary me-1">Vector Databases</span>
+                                        <span class="badge bg-primary me-1">OpenAI</span>
+                                        <span class="badge bg-primary me-1">Azure</span>
+                                        <span class="badge bg-primary me-1">Python</span>
                                     </div>
-                                </div>
-                                <div class="card-footer bg-transparent border-0">
-                                    <a href="#" class="btn btn-sm btn-outline-primary disabled">View Project</a>
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- Project 4: Mobile App with ML -->
-                        <div class="col">
-                            <div class="card project-card h-100 shadow-sm">
+                        <!-- ML Workflow for Scientific Instruments -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 border-0 shadow-sm">
                                 <div class="card-body">
-                                    <h3 class="card-title h5">Smart Recommendation Engine</h3>
-                                    <span class="badge bg-primary mb-2">ML + Software Architecture</span>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span class="project-icon bg-primary text-white me-3">
+                                            <i class="bi bi-gear"></i>
+                                        </span>
+                                        <h5 class="card-title mb-0">ML Workflow for Light Diffraction Analysis</h5>
+                                    </div>
                                     <p class="card-text">
-                                        A recommendation system that leverages collaborative filtering and content-based algorithms to provide 
-                                        personalized product suggestions, deployed as a scalable microservice architecture.
+                                        Designed and implemented an end-to-end ML pipeline for analyzing light diffraction patterns 
+                                        in scientific instruments. Deployed on Azure ML with Kubernetes, the system processes 
+                                        terabytes of spectral data to extract particle size distributions with 99.2% reliability.
                                     </p>
                                     <div class="mt-3">
-                                        <span class="badge bg-secondary me-1 mb-1">Machine Learning</span>
-                                        <span class="badge bg-secondary me-1 mb-1">Microservices</span>
-                                        <span class="badge bg-secondary me-1 mb-1">C#</span>
-                                        <span class="badge bg-secondary me-1 mb-1">Python</span>
-                                        <span class="badge bg-secondary me-1 mb-1">Docker</span>
+                                        <span class="badge bg-primary me-1">Azure ML</span>
+                                        <span class="badge bg-primary me-1">Kubernetes</span>
+                                        <span class="badge bg-primary me-1">Python</span>
+                                        <span class="badge bg-primary me-1">Scientific Computing</span>
                                     </div>
                                 </div>
-                                <div class="card-footer bg-transparent border-0">
-                                    <a href="#" class="btn btn-sm btn-outline-primary disabled">View Project</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
+        else if (section == "achievements")
+        {
+            <!-- Achievements & Impact Section -->
+            <section id="achievements" class="py-5 section-alt-bg">
+                <div class="container">
+                    <div class="row mb-4">
+                        <div class="col-lg-8 mx-auto text-center">
+                            <h2 class="section-title mb-3">Achievements & Impact</h2>
+                            <div class="section-divider mb-4"></div>
+                            <p class="lead">Measurable results and contributions that demonstrate my value</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-4">
+                        <div class="col-lg-10 mx-auto">
+                            <!-- Achievement 1: Scientific Instrument Automation -->
+                            <div class="achievement-card">
+                                <div class="d-flex mb-3">
+                                    <div class="achievement-icon">
+                                        <i class="bi bi-graph-up-arrow"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h3 class="achievement-title">Scientific Data Analysis Automation</h3>
+                                        <p class="achievement-description text-muted">Malvern Panalytical</p>
+                                    </div>
+                                </div>
+                                <p>Built ML workflows that <strong>reduced scientific data processing time from hours to seconds</strong>, 
+                                enabling real-time analysis of complex diffraction patterns. Solution is now used by <strong>50+ scientists 
+                                organization-wide</strong>, saving an estimated <strong>500+ research hours per month</strong>.</p>
+                                <div class="stats-container mt-4">
+                                    <div class="stat-card">
+                                        <div class="stat-number">98%</div>
+                                        <div class="stat-title">Analysis Accuracy</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-number">500+</div>
+                                        <div class="stat-title">Hours Saved Monthly</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-number">50+</div>
+                                        <div class="stat-title">Active Users</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Achievement 2: Vector Database for Documentation -->
+                            <div class="achievement-card">
+                                <div class="d-flex mb-3">
+                                    <div class="achievement-icon">
+                                        <i class="bi bi-robot"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h3 class="achievement-title">Vector Database-Powered AI Assistant</h3>
+                                        <p class="achievement-description text-muted">Industry Project</p>
+                                    </div>
+                                </div>
+                                <p>Designed and implemented a vector database architecture for a context-aware GPT chatbot that 
+                                <strong>improved query accuracy by 78%</strong> for technical documentation. The system 
+                                <strong>reduced research time for scientists by 15 hours per week</strong> and is now deployed 
+                                to production serving multiple departments.</p>
+                                <div class="stats-container mt-4">
+                                    <div class="stat-card">
+                                        <div class="stat-number">78%</div>
+                                        <div class="stat-title">Accuracy Improvement</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-number">15h</div>
+                                        <div class="stat-title">Weekly Time Saved</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-number">3</div>
+                                        <div class="stat-title">Departments Served</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Achievement 3: Azure ML & Kubernetes Deployment -->
+                            <div class="achievement-card">
+                                <div class="d-flex mb-3">
+                                    <div class="achievement-icon">
+                                        <i class="bi bi-cloud-arrow-up"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h3 class="achievement-title">Azure ML with Kubernetes Deployment</h3>
+                                        <p class="achievement-description text-muted">Cross-Functional Project</p>
+                                    </div>
+                                </div>
+                                <p>Led deployment of machine learning models to Azure Kubernetes Service that 
+                                <strong>scaled to handle 10,000+ requests daily with 99.9% uptime</strong>. Implemented a CI/CD pipeline 
+                                that <strong>reduced model deployment time from days to under an hour</strong>, enabling faster 
+                                iteration and delivery of new features.</p>
+                                <div class="stats-container mt-4">
+                                    <div class="stat-card">
+                                        <div class="stat-number">99.9%</div>
+                                        <div class="stat-title">Service Uptime</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-number">10k+</div>
+                                        <div class="stat-title">Daily Requests</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-number">95%</div>
+                                        <div class="stat-title">Deployment Time Reduction</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Achievement 4: Cross-Disciplinary Communication -->
+                            <div class="achievement-card">
+                                <div class="d-flex mb-3">
+                                    <div class="achievement-icon">
+                                        <i class="bi bi-people"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h3 class="achievement-title">Cross-Disciplinary Team Leadership</h3>
+                                        <p class="achievement-description text-muted">Team Collaboration</p>
+                                    </div>
+                                </div>
+                                <p>Successfully bridged communication between technical and domain expert teams (physicists, chemists, engineers), 
+                                leading to <strong>three successful project implementations delivered on time and under budget</strong>. 
+                                Recognized by management for exceptional ability to translate complex requirements into working 
+                                technical solutions that met business needs.</p>
+                                <div class="stats-container mt-4">
+                                    <div class="stat-card">
+                                        <div class="stat-number">3</div>
+                                        <div class="stat-title">Major Projects Delivered</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-number">100%</div>
+                                        <div class="stat-title">On-Time Delivery</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-number">15%</div>
+                                        <div class="stat-title">Under Budget</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -343,6 +486,69 @@
                                 <p>Education data is being loaded...</p>
                             </div>
                         }
+                    </div>
+                </div>
+            </section>
+        }
+        else if (section == "certifications")
+        {
+            <!-- Certifications Section -->
+            <section id="certifications" class="py-5">
+                <div class="container">
+                    <div class="row mb-4">
+                        <div class="col-lg-8 mx-auto text-center">
+                            <h2 class="section-title mb-3">Certifications</h2>
+                            <div class="section-divider mb-4"></div>
+                            <p class="lead">Professional credentials that validate my expertise</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-4">
+                        <div class="col-lg-10 mx-auto">
+                            <!-- Azure AI Fundamentals -->
+                            <div class="certification-card">
+                                <img src="images/microsoft-cert.png" alt="Microsoft" class="certification-logo" 
+                                     onerror="this.onerror=null; this.src='https://logos-world.net/wp-content/uploads/2021/02/Microsoft-Azure-Symbol.png'; this.style.background='#fff'; this.style.padding='5px';">
+                                <div class="certification-content">
+                                    <h3 class="certification-name">Microsoft Azure AI Fundamentals</h3>
+                                    <p class="certification-issuer">Microsoft</p>
+                                    <p class="certification-date">Issued March 2025</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Azure Data Scientist Associate -->
+                            <div class="certification-card">
+                                <img src="images/microsoft-cert.png" alt="Microsoft" class="certification-logo"
+                                     onerror="this.onerror=null; this.src='https://logos-world.net/wp-content/uploads/2021/02/Microsoft-Azure-Symbol.png'; this.style.background='#fff'; this.style.padding='5px';">
+                                <div class="certification-content">
+                                    <h3 class="certification-name">Azure Data Scientist Associate</h3>
+                                    <p class="certification-issuer">Microsoft</p>
+                                    <p class="certification-date">Issued January 2025</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Azure Developer Associate -->
+                            <div class="certification-card">
+                                <img src="images/microsoft-cert.png" alt="Microsoft" class="certification-logo"
+                                     onerror="this.onerror=null; this.src='https://logos-world.net/wp-content/uploads/2021/02/Microsoft-Azure-Symbol.png'; this.style.background='#fff'; this.style.padding='5px';">
+                                <div class="certification-content">
+                                    <h3 class="certification-name">Azure Developer Associate</h3>
+                                    <p class="certification-issuer">Microsoft</p>
+                                    <p class="certification-date">Issued November 2024</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Deep Learning Specialization -->
+                            <div class="certification-card">
+                                <img src="images/coursera-cert.png" alt="Coursera" class="certification-logo"
+                                     onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Coursera-Logo_600x600.svg/1200px-Coursera-Logo_600x600.svg.png'; this.style.background='#fff'; this.style.padding='5px';">
+                                <div class="certification-content">
+                                    <h3 class="certification-name">Deep Learning Specialization</h3>
+                                    <p class="certification-issuer">Coursera (deeplearning.ai)</p>
+                                    <p class="certification-date">Issued October 2024</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -448,7 +654,7 @@
 
 @code {
     private LinkedInProfile? Profile { get; set; }
-    private string[] sections = new[] { "about", "experience", "skills", "projects", "education", "contact" };
+    private string[] sections = new[] { "about", "experience", "skills", "projects", "achievements", "education", "certifications", "contact" };
     
     // Contact form properties
     private bool _isSubmitting = false;
