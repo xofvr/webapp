@@ -52,13 +52,78 @@
     }
 }
 
-/* Navbar animations */
+/* Custom navbar animations and styling */
 .navbar-collapse {
-    transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease;
 }
 
-.navbar {
-    transition: all 0.3s ease;
+.navbar-collapse.collapse {
+    display: none;
+}
+
+.navbar-collapse.show {
+    display: block;
+    animation: slideDown 0.3s ease forwards;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (min-width: 992px) {
+    .navbar-collapse.collapse {
+        display: flex !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        background-color: var(--header-bg);
+        padding: 1rem;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        border-top: 1px solid var(--border-color);
+    }
+    
+    [data-theme='dark'] .navbar-collapse {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .navbar-toggler {
+        margin-left: auto;
+    }
+    
+    .navbar-nav {
+        flex-direction: column;
+    }
+    
+    .nav-item {
+        margin: 0.25rem 0;
+    }
+    
+    .nav-link {
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+    }
+    
+    .nav-link:hover {
+        background-color: var(--hover-bg);
+    }
 }
 
 /* Experience card styles with centered dates */

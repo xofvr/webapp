@@ -24,10 +24,14 @@ function initializeSmoothScroll() {
                     });
                     
                     // Close mobile nav menu if open
-                    const navbarToggler = document.querySelector('.navbar-toggler');
-                    const navbarCollapse = document.querySelector('.navbar-collapse');
-                    if (navbarToggler && !navbarToggler.classList.contains('collapsed') && navbarCollapse) {
-                        navbarToggler.click();
+                    if (window.innerWidth < 992) {
+                        const navbarCollapse = document.querySelector('.navbar-collapse');
+                        if (navbarCollapse && !navbarCollapse.classList.contains('collapse')) {
+                            // Find a way to notify Blazor component to toggle menu
+                            if (window.DotNet) {
+                                DotNet.invokeMethodAsync('FarhanS.Portfolio', 'HandleScreenSizeChange', true);
+                            }
+                        }
                     }
                     
                     // Update URL hash without scrolling
@@ -55,7 +59,7 @@ function initializeSmoothScroll() {
 }
 
 // Track section visibility for navigation highlighting
-window.registerIntersectionObservers = function() {
+function registerIntersectionObservers() {
     const sections = document.querySelectorAll('section[id]');
     const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
     
@@ -80,9 +84,53 @@ window.registerIntersectionObservers = function() {
             observer.observe(section);
         });
     }
-};
+}
+
+// Manually add toggle animation to the navbar
+function setupNavbarAnimation() {
+    // Watch for show/hide state changes and add animation
+    const navbarCollapse = document.getElementById('navbarNav');
+    if (!navbarCollapse) return;
+    
+    // Set up a mutation observer to detect class changes
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.attributeName === 'class') {
+                const isShowing = navbarCollapse.classList.contains('show');
+                if (isShowing) {
+                    // Apply animation for showing
+                    navbarCollapse.style.animation = 'slideDown 0.3s ease forwards';
+                } 
+            }
+        });
+    });
+    
+    observer.observe(navbarCollapse, { attributes: true });
+    
+    // Add click listener to body for closing menu on click outside
+    document.addEventListener('click', (e) => {
+        if (window.innerWidth < 992 && 
+            navbarCollapse && 
+            !navbarCollapse.classList.contains('collapse') && 
+            !navbarCollapse.contains(e.target) && 
+            !e.target.closest('.navbar-toggler')) {
+            
+            // Close menu on click outside
+            if (window.DotNet) {
+                DotNet.invokeMethodAsync('FarhanS.Portfolio', 'HandleScreenSizeChange', true);
+            }
+        }
+    });
+}
 
 // Expose functions to Blazor
 window.navigationManager = {
-    initializeSmoothScroll: initializeSmoothScroll
+    initializeSmoothScroll: initializeSmoothScroll,
+    registerIntersectionObservers: registerIntersectionObservers,
+    setupNavbarAnimation: setupNavbarAnimation
 };
+
+// Initialize after document load
+document.addEventListener('DOMContentLoaded', function() {
+    setupNavbarAnimation();
+});

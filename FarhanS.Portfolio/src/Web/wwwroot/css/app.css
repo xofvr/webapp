@@ -201,7 +201,7 @@ a:hover {
     font-size: 1.5rem;
     font-weight: 600;
     color: var(--primary-color);
-    margin-right: 2rem;
+    margin-right: auto;
 }
 
 .navbar-toggler {
@@ -692,7 +692,7 @@ section:nth-child(odd) {
     font-size: 0.9rem;
 }
 
-/* Enhanced badges for skills */
+/* Improved badge styling */
 .badge {
     padding: 0.4rem 0.8rem;
     font-size: 0.75rem;
@@ -709,6 +709,18 @@ section:nth-child(odd) {
     background-color: var(--badge-bg) !important;
     color: var(--badge-text) !important;
     border: 1px solid var(--primary-color);
+}
+
+/* Fix for vertically centering date badges in experience cards */
+.experience-card .d-flex.justify-content-between {
+    align-items: center;
+}
+
+.experience-card .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0;
 }
 
 .badge.bg-primary:hover {
@@ -1622,6 +1634,105 @@ thead th {
     transform: translateX(5px);
 }
 
+/* Navbar animation and responsive styles */
+.navbar-collapse {
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.navbar-menu-collapsed {
+    opacity: 0;
+    transform: translateY(-20px);
+    display: none;
+}
+
+.navbar-menu-expanded {
+    opacity: 1;
+    transform: translateY(0);
+    display: block;
+}
+
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: var(--header-bg);
+        box-shadow: 0 5px 10px var(--shadow-color);
+        padding: 1rem;
+        z-index: 1000;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        border-top: 1px solid var(--border-color);
+    }
+    
+    .navbar-toggler {
+        margin-left: auto;
+    }
+}
+
+@media (min-width: 992px) {
+    .navbar-menu-collapsed, 
+    .navbar-menu-expanded {
+        display: flex !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
+
+/* Improve toggle button styling */
+.navbar-toggler {
+    padding: 0.5rem;
+    border: none;
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+/* Improved nav menu items */
+.navbar-nav .nav-link {
+    transition: all 0.3s ease;
+    position: relative;
+    font-weight: 500;
+}
+
+.navbar-nav .nav-link:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.navbar-nav .nav-link:hover:after,
+.navbar-nav .nav-link.active:after {
+    width: 80%;
+}
+
+@media (max-width: 991.98px) {
+    .navbar-nav .nav-link {
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+    }
+    
+    .navbar-nav .nav-link:hover,
+    .navbar-nav .nav-link.active {
+        background-color: var(--hover-bg);
+    }
+    
+    .navbar-nav .nav-link:after {
+        display: none;
+    }
+}
+
 /* Responsive Adjustments */
 @media (max-width: 992px) {
     .hero-title {
@@ -1708,6 +1819,12 @@ thead th {
     
     .project-grid, .skill-grid, .contact-grid {
         grid-template-columns: 1fr;
+    }
+    
+    /* Center button groups on mobile */
+    .d-flex.gap-3 {
+        justify-content: center !important;
+        width: 100% !important;
     }
 }
 
@@ -1857,4 +1974,25 @@ thead th {
 
 [data-theme='dark'] .text-muted {
     color: var(--text-muted) !important;
+}
+
+/* Override the Blazor-specific hamburger menu styling */
+button[b-4oy3az7odj].navbar-toggler {
+    position: absolute !important;
+    right: 1rem !important;
+    margin: 0 !important;
+    padding: 0.5rem !important;
+    z-index: 1010 !important;
+}
+
+/* This targets the specific hamburger menu with the Blazor-generated attributes */
+.hamburger-menu[b-4oy3az7odj] {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Ensure clean positioning for the navbar brand */
+.navbar-brand {
+    margin-right: auto;
 }
