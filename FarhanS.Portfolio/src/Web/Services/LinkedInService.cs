@@ -68,73 +68,109 @@ namespace FarhanS.Portfolio.Web.Services
 
         private LinkedInProfile GetHardcodedProfileData()
         {
-            // Hardcoded data based on Farhan's LinkedIn profile
+            // Hardcoded data based on Farhan's LinkedIn profile, combining both Software Development and Data Science CVs
             return new LinkedInProfile
             {
                 FullName = "Farhan Shakeel",
-                Title = "Software Developer",
-                Summary = "Passionate software developer with expertise in .NET technologies, web development, and database systems.",
+                Title = "Data Scientist & Software Engineer",
+                Summary = "Data science professional with software engineering background, experienced in machine learning, predictive analytics, and full-stack development using .NET technologies.",
                 ProfileUrl = "https://www.linkedin.com/in/m-shakeel014/",
                 Experiences = new List<Experience>
                 {
                     new Experience
                     {
-                        Company = "Current Company",
-                        Title = "Software Developer",
-                        Duration = "2022 - Present",
-                        Description = "Working on full-stack development with .NET Core, Blazor, and database systems including MySQL.",
-                        Location = "Remote",
-                        StartDate = new DateTime(2022, 1, 1)
+                        Company = "Malvern Panalytical",
+                        Title = "Assistant Data Scientist",
+                        Duration = "07/2023 - 07/2024",
+                        Description = "Developed data processing pipelines and machine learning models for material analysis. Applied statistical methods to research data and implemented automated workflows for data preparation and analysis. Collaborated with cross-functional teams to deliver data-driven insights.",
+                        Location = "UK",
+                        StartDate = new DateTime(2023, 7, 1),
+                        EndDate = new DateTime(2024, 7, 1)
                     },
                     new Experience
                     {
-                        Company = "Previous Company",
-                        Title = "Junior Developer",
-                        Duration = "2020 - 2022",
-                        Description = "Developed and maintained web applications and database solutions.",
-                        Location = "On-site",
-                        StartDate = new DateTime(2020, 1, 1),
-                        EndDate = new DateTime(2021, 12, 31)
+                        Company = "UWE, Bristol",
+                        Title = "Student Ambassador",
+                        Duration = "11/2022 - 04/2023",
+                        Description = "Assisted new students in adapting to university life and academic requirements. Organized student activities and provided guidance on university resources and opportunities.",
+                        Location = "Bristol, UK",
+                        StartDate = new DateTime(2022, 11, 1),
+                        EndDate = new DateTime(2023, 4, 30)
+                    },
+                    new Experience
+                    {
+                        Company = "Hollister Co.",
+                        Title = "Brand Representative",
+                        Duration = "12/2021 - 01/2022",
+                        Description = "Represented the brand and assisted customers. Provided excellent customer service while maintaining store presentation standards.",
+                        Location = "UK",
+                        StartDate = new DateTime(2021, 12, 1),
+                        EndDate = new DateTime(2022, 1, 31)
+                    },
+                    new Experience
+                    {
+                        Company = "Al Babtain Auto",
+                        Title = "Intern",
+                        Duration = "08/2021 - 09/2021",
+                        Description = "Gained practical experience in business operations. Assisted with data entry and analysis tasks.",
+                        Location = "Kuwait",
+                        StartDate = new DateTime(2021, 8, 1),
+                        EndDate = new DateTime(2021, 9, 30)
                     }
                 },
                 Education = new List<Education>
                 {
                     new Education
                     {
-                        Institution = "University Name",
-                        Degree = "Bachelor's Degree",
+                        Institution = "University of the West of England, Bristol",
+                        Degree = "BSc (Hons)",
                         Field = "Computer Science",
-                        Duration = "2016 - 2020",
-                        StartDate = new DateTime(2016, 9, 1),
-                        EndDate = new DateTime(2020, 5, 31)
+                        Duration = "2021 - 2024",
+                        StartDate = new DateTime(2021, 9, 1),
+                        EndDate = new DateTime(2024, 6, 30)
                     }
                 },
                 Skills = new List<Skill>
                 {
                     // Languages
+                    new Skill { Name = "Python", Category = "Languages", Endorsements = 14 },
+                    new Skill { Name = "R", Category = "Languages", Endorsements = 11 },
                     new Skill { Name = "C#", Category = "Languages", Endorsements = 12 },
                     new Skill { Name = "JavaScript", Category = "Languages", Endorsements = 10 },
                     new Skill { Name = "TypeScript", Category = "Languages", Endorsements = 8 },
                     new Skill { Name = "HTML/CSS", Category = "Languages", Endorsements = 9 },
                     new Skill { Name = "SQL", Category = "Languages", Endorsements = 11 },
                     
+                    // Data Science
+                    new Skill { Name = "Machine Learning", Category = "Data Science", Endorsements = 13 },
+                    new Skill { Name = "Data Analysis", Category = "Data Science", Endorsements = 12 },
+                    new Skill { Name = "Pandas", Category = "Data Science", Endorsements = 11 },
+                    new Skill { Name = "NumPy", Category = "Data Science", Endorsements = 10 },
+                    new Skill { Name = "Scikit-learn", Category = "Data Science", Endorsements = 10 },
+                    new Skill { Name = "TensorFlow", Category = "Data Science", Endorsements = 9 },
+                    new Skill { Name = "Statistical Modeling", Category = "Data Science", Endorsements = 10 },
+                    
                     // Frameworks
                     new Skill { Name = ".NET Core", Category = "Frameworks", Endorsements = 11 },
                     new Skill { Name = "Blazor", Category = "Frameworks", Endorsements = 9 },
                     new Skill { Name = "ASP.NET MVC", Category = "Frameworks", Endorsements = 10 },
                     new Skill { Name = "Entity Framework", Category = "Frameworks", Endorsements = 8 },
-                    new Skill { Name = "Bootstrap", Category = "Frameworks", Endorsements = 7 },
+                    new Skill { Name = "Flask", Category = "Frameworks", Endorsements = 9 },
+                    new Skill { Name = "Django", Category = "Frameworks", Endorsements = 8 },
                     
                     // Databases
                     new Skill { Name = "MySQL", Category = "Databases", Endorsements = 10 },
                     new Skill { Name = "SQL Server", Category = "Databases", Endorsements = 9 },
                     new Skill { Name = "MongoDB", Category = "Databases", Endorsements = 6 },
+                    new Skill { Name = "PostgreSQL", Category = "Databases", Endorsements = 7 },
                     
                     // Tools & Technologies
                     new Skill { Name = "Git", Category = "Tools", Endorsements = 10 },
                     new Skill { Name = "Docker", Category = "Tools", Endorsements = 7 },
                     new Skill { Name = "Azure", Category = "Cloud", Endorsements = 8 },
-                    new Skill { Name = "CI/CD", Category = "DevOps", Endorsements = 7 }
+                    new Skill { Name = "CI/CD", Category = "DevOps", Endorsements = 7 },
+                    new Skill { Name = "Jupyter", Category = "Tools", Endorsements = 12 },
+                    new Skill { Name = "Power BI", Category = "Tools", Endorsements = 9 }
                 },
                 Certifications = new List<string>
                 {

@@ -1,31 +1,30 @@
 @inherits LayoutComponentBase
-@inject IJSRuntime JS
 
 <div class="page">
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
             <div class="container">
                 <a class="navbar-brand fw-bold" href="/">FS</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" @onclick="ToggleNavMenu" 
+                        aria-controls="navbarNav" aria-expanded="@(!collapseNavMenu)" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-collapse @MenuClass" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="#about">About</a>
+                            <a class="nav-link" href="#about" @onclick="NavMenuItemClicked">About</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#experience">Experience</a>
+                            <a class="nav-link" href="#experience" @onclick="NavMenuItemClicked">Experience</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#skills">Skills</a>
+                            <a class="nav-link" href="#skills" @onclick="NavMenuItemClicked">Skills</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#education">Education</a>
+                            <a class="nav-link" href="#education" @onclick="NavMenuItemClicked">Education</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#contact">Contact</a>
+                            <a class="nav-link" href="#contact" @onclick="NavMenuItemClicked">Contact</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="https://www.linkedin.com/in/m-shakeel014/" target="_blank" rel="noopener">
@@ -48,18 +47,137 @@
     <main>
         @Body
     </main>
+    
+    <footer class="footer">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-5 text-md-start mb-3 mb-md-0">
+                    <p class="mb-0">&copy; @DateTime.Now.Year Farhan S. All rights reserved.</p>
+                </div>
+                <div class="col-md-2 text-center mb-3 mb-md-0">
+                    <button @onclick="ToggleTheme" class="btn theme-btn" title="Toggle theme mode">
+                        <i class="bi @(IsDarkMode ? "bi-sun" : "bi-moon-stars")"></i>
+                    </button>
+                </div>
+                <div class="col-md-5 text-md-end">
+                    <p class="mb-0">Made with <i class="bi bi-heart-fill text-danger"></i> using Blazor WebAssembly</p>
+                </div>
+            </div>
+        </div>
+    </footer>
 </div>
 
 @code {
+    private bool IsDarkMode { get; set; } = false;
+    private bool collapseNavMenu = true;
+    private bool isMobileView = false;
+    
+    private string MenuClass => collapseNavMenu ? "collapse" : "show";
+    
+    [Inject]
+    public required IJSRuntime JSRuntime { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        // Check if dark mode is enabled
+        var result = await JSRuntime.InvokeAsync<bool>("themeManager.isDarkMode");
+        IsDarkMode = result;
+    }
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             // Initialize smooth scroll for navigation links
-            await JS.InvokeVoidAsync("navigationManager.initializeSmoothScroll");
+            await JSRuntime.InvokeVoidAsync("navigationManager.initializeSmoothScroll");
             
             // Register intersection observers for section visibility tracking
-            await JS.InvokeVoidAsync("registerIntersectionObservers");
+            await JSRuntime.InvokeVoidAsync("registerIntersectionObservers");
+            
+            // Initialize navbar animation
+            await JSRuntime.InvokeVoidAsync("navigationManager.setupNavbarAnimation");
+            
+            // Check screen size and set initial state
+            isMobileView = await JSRuntime.InvokeAsync<bool>("eval", "window.innerWidth < 992");
+            
+            // Set up resize event listener to handle window resizing
+            await JSRuntime.InvokeVoidAsync("eval", @"
+                window.addEventListener('resize', function() {
+                    var isMobile = window.innerWidth < 992;
+                    if (window.lastIsMobileState !== isMobile) {
+                        window.lastIsMobileState = isMobile;
+                        DotNet.invokeMethodAsync('FarhanS.Portfolio', 'HandleScreenSizeChange', isMobile);
+                    }
+                });
+                window.lastIsMobileState = window.innerWidth < 992;
+            ");
+            
+            // Ensure menu starts collapsed on mobile
+            if (isMobileView) 
+            {
+                collapseNavMenu = true;
+            } 
+            else 
+            {
+                collapseNavMenu = false;
+            }
+            
+            StateHasChanged();
         }
+    }
+    
+    [JSInvokable]
+    public static Task HandleScreenSizeChange(bool isMobile)
+    {
+        // This method will be called from JS when screen size changes
+        // We need a reference to the component instance to update state
+        if (Current != null)
+        {
+            Current.isMobileView = isMobile;
+            
+            // If switching to desktop, ensure menu is visible
+            if (!isMobile)
+            {
+                Current.collapseNavMenu = false;
+            }
+            // If switching to mobile, ensure menu is collapsed
+            else
+            {
+                Current.collapseNavMenu = true;
+            }
+            
+            Current.StateHasChanged();
+        }
+        
+        return Task.CompletedTask;
+    }
+    
+    // Static reference to current instance for JS callback
+    private static MainLayout Current { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        Current = this;
+        base.OnInitialized();
+    }
+    
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+    
+    private void NavMenuItemClicked()
+    {
+        // Only close the menu on mobile
+        if (isMobileView)
+        {
+            collapseNavMenu = true;
+        }
+    }
+    
+    private async Task ToggleTheme()
+    {
+        await JSRuntime.InvokeVoidAsync("themeManager.toggle");
+        IsDarkMode = !IsDarkMode;
     }
 }

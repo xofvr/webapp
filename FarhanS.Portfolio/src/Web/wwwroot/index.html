@@ -13,9 +13,9 @@
     
     <!-- Add preloading for critical resources -->
     <link rel="preload" href="_framework/blazor.webassembly.js" as="script" />
-    <link rel="preload" href="css/app.css" as="style" />
     <link rel="preload" href="css/theme.css" as="style" />
     <link rel="preload" href="css/layout.css" as="style" />
+    <link rel="preload" href="css/app.css" as="style" />
     <link rel="preload" href="js/theme.js" as="script" />
     <link rel="preload" href="js/navigation.js" as="script" />
     
@@ -23,11 +23,11 @@
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link rel="preconnect" href="https://js.monitor.azure.com" crossorigin />
     
-    <!-- Standard stylesheets with media queries for performance -->
+    <!-- Standard stylesheets with priority loading order for proper cascading -->
     <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="css/app.css" />
-    <link rel="stylesheet" href="css/theme.css" />
-    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/theme.css" /> <!-- Theme variables first -->
+    <link rel="stylesheet" href="css/layout.css" /> <!-- Layout styles second -->
+    <link rel="stylesheet" href="css/app.css" /> <!-- Application styles last -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" media="print" onload="this.media='all'" />
     
     <!-- Application Insights snippet -->
@@ -88,20 +88,10 @@
     <!-- Navigation script - loaded after main app -->
     <script src="js/navigation.js" defer></script>
     
+    <!-- Service worker manager script -->
+    <script src="js/service-worker-manager.js" defer></script>
+    
     <script>
-        // Register service worker after page load
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('service-worker.js')
-                    .then(function(registration) {
-                        console.log('Service Worker registered with scope:', registration.scope);
-                    })
-                    .catch(function(error) {
-                        console.log('Service Worker registration failed:', error);
-                    });
-            });
-        }
-        
         // Handle Blazor errors gracefully
         window.addEventListener('unhandledrejection', function(event) {
             console.log('Unhandled Promise Rejection:', event.reason);

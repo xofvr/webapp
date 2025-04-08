@@ -1,5 +1,6 @@
 /**
  * Theme handling functionality for FarhanS.Portfolio
+ * Implements Apple's best practices for dark mode
  */
 
 // Initialize theme from local storage or system preference
@@ -17,13 +18,20 @@ function initializeTheme() {
         document.documentElement.setAttribute('data-theme', savedTheme);
         updateThemeToggleIcon(savedTheme);
     } else {
-        // Apply theme based on system preference
+        // Make dark mode the default, but still check system preference as a fallback
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const theme = prefersDark ? 'dark' : 'light';
+        // Default to dark mode regardless of system preference
+        const theme = 'dark';
         document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme); // Save system preference
+        localStorage.setItem('theme', theme); // Save default theme
         updateThemeToggleIcon(theme);
     }
+    
+    // Apply a data attribute to the body for transitions
+    document.body.classList.add('theme-transition');
+    setTimeout(() => {
+        document.body.classList.remove('theme-transition');
+    }, 500);
 }
 
 // Function to toggle between light and dark themes
@@ -52,9 +60,13 @@ function updateThemeToggleIcon(theme) {
     const themeIcons = document.querySelectorAll('.theme-btn i');
     themeIcons.forEach(icon => {
         if (theme === 'dark') {
+            // Sun icon when in dark mode (indicating switching to light)
             icon.className = 'bi bi-sun';
+            icon.setAttribute('title', 'Switch to light mode');
         } else {
+            // Moon icon when in light mode (indicating switching to dark)
             icon.className = 'bi bi-moon-stars';
+            icon.setAttribute('title', 'Switch to dark mode');
         }
     });
 }
@@ -101,7 +113,9 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e =
 // Expose functions to be called from Blazor
 window.themeManager = {
     toggle: toggleTheme,
-    getTheme: () => document.documentElement.getAttribute('data-theme')
+    getTheme: () => document.documentElement.getAttribute('data-theme'),
+    // New method to allow checking theme from Blazor
+    isDarkMode: () => document.documentElement.getAttribute('data-theme') === 'dark'
 };
 
 // Smooth scroll for navigation links

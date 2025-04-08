@@ -1,0 +1,176 @@
+/* Footer styling */
+.footer {
+    padding: 2rem 0;
+    background-color: var(--bs-light);
+    border-top: 1px solid var(--bs-border-color);
+    margin-top: 3rem;
+}
+
+/* Theme toggle button styling */
+.theme-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bs-primary);
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.theme-btn:hover {
+    transform: scale(1.1);
+    background-color: var(--bs-primary-dark, var(--bs-primary));
+    color: white;
+}
+
+.theme-btn i {
+    font-size: 1.2rem;
+}
+
+/* Theme-responsive section backgrounds */
+.section-alt-bg {
+    background-color: #f8f9fa;
+}
+
+:root[data-bs-theme="dark"] .section-alt-bg {
+    background-color: #2b3035; /* Darker shade for dark mode */
+}
+
+/* Responsive footer adjustments */
+@media (max-width: 767.98px) {
+    .footer .row > div {
+        text-align: center !important;
+        margin-bottom: 1rem;
+    }
+    
+    .theme-btn {
+        margin: 0 auto;
+    }
+}
+
+/* Custom navbar animations and styling */
+.navbar-collapse {
+    transition: all 0.3s ease;
+}
+
+.navbar-collapse.collapse {
+    display: none;
+}
+
+.navbar-collapse.show {
+    display: block;
+    animation: slideDown 0.3s ease forwards;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (min-width: 992px) {
+    .navbar-collapse.collapse {
+        display: flex !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        background-color: var(--header-bg);
+        padding: 1rem;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        border-top: 1px solid var(--border-color);
+    }
+    
+    [data-theme='dark'] .navbar-collapse {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .navbar-toggler {
+        margin-left: auto;
+    }
+    
+    .navbar-nav {
+        flex-direction: column;
+    }
+    
+    .nav-item {
+        margin: 0.25rem 0;
+    }
+    
+    .nav-link {
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+    }
+    
+    .nav-link:hover {
+        background-color: var(--hover-bg);
+    }
+}
+
+/* Experience card styles with centered dates */
+.experience-card .badge {
+    text-align: center;
+    margin: 0;
+    display: inline-block;
+    min-width: 100px;
+}
+
+.experience-card .d-flex {
+    align-items: center;
+}
+
+/* Dark mode toggle in footer for mobile */
+.mobile-dark-toggle {
+    display: none;
+}
+
+@media (max-width: 992px) {
+    .mobile-dark-toggle {
+        display: inline-block;
+        margin: 1rem auto;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        background-color: var(--bs-primary);
+        color: white;
+        border: none;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+}
+
+/* Additional responsive navbar fixes */
+@media (max-width: 992px) {
+    .navbar-collapse {
+        background-color: var(--bs-light);
+        padding: 1rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        margin-top: 0.5rem;
+    }
+    
+    .navbar-nav {
+        padding: 0.5rem 0;
+    }
+    
+    .nav-item {
+        margin-bottom: 0.5rem;
+    }
+}

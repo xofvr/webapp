@@ -56,6 +56,7 @@ builder.Services.AddScoped(sp => {
 
 // Register Services with appropriate lifetimes
 builder.Services.AddScoped<ILinkedInService, LinkedInService>();
+builder.Services.AddScoped<IContactService, ContactService>();
 
 // Register DbContext if connection string is available
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
