@@ -1,16 +1,15 @@
 ﻿@inject IJSRuntime JSRuntime
 
 <div class="navbar-container">
-    <div class="navbar-brand-container">
-        <a class="navbar-brand" href="">Farhan S.</a>
-        <button title="Navigation menu" class="navbar-toggler @(collapseNavMenu ? "" : "menu-open")" @onclick="ToggleNavMenu">
-            <div class="hamburger-menu">
-                <span class="line line-1"></span>
-                <span class="line line-2"></span>
-                <span class="line line-3"></span>
-            </div>
-        </button>
-    </div>
+    <a class="navbar-brand" href="">Farhan S.</a>
+    
+    <button title="Navigation menu" class="navbar-toggler @(collapseNavMenu ? "" : "menu-open")" @onclick="ToggleNavMenu">
+        <div class="hamburger-menu">
+            <span class="line line-1"></span>
+            <span class="line line-2"></span>
+            <span class="line line-3"></span>
+        </div>
+    </button>
 
     <div class="@NavMenuCssClass nav-scrollable" style="@NavMenuStyle">
         <nav class="nav-menu">

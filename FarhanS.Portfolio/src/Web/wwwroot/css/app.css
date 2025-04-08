@@ -201,7 +201,7 @@ a:hover {
     font-size: 1.5rem;
     font-weight: 600;
     color: var(--primary-color);
-    margin-right: 2rem;
+    margin-right: auto;
 }
 
 .navbar-toggler {
@@ -692,7 +692,7 @@ section:nth-child(odd) {
     font-size: 0.9rem;
 }
 
-/* Enhanced badges for skills */
+/* Improved badge styling */
 .badge {
     padding: 0.4rem 0.8rem;
     font-size: 0.75rem;
@@ -709,6 +709,18 @@ section:nth-child(odd) {
     background-color: var(--badge-bg) !important;
     color: var(--badge-text) !important;
     border: 1px solid var(--primary-color);
+}
+
+/* Fix for vertically centering date badges in experience cards */
+.experience-card .d-flex.justify-content-between {
+    align-items: center;
+}
+
+.experience-card .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0;
 }
 
 .badge.bg-primary:hover {
@@ -1808,6 +1820,12 @@ thead th {
     .project-grid, .skill-grid, .contact-grid {
         grid-template-columns: 1fr;
     }
+    
+    /* Center button groups on mobile */
+    .d-flex.gap-3 {
+        justify-content: center !important;
+        width: 100% !important;
+    }
 }
 
 @media (max-width: 576px) {
@@ -1956,4 +1974,25 @@ thead th {
 
 [data-theme='dark'] .text-muted {
     color: var(--text-muted) !important;
+}
+
+/* Override the Blazor-specific hamburger menu styling */
+button[b-4oy3az7odj].navbar-toggler {
+    position: absolute !important;
+    right: 1rem !important;
+    margin: 0 !important;
+    padding: 0.5rem !important;
+    z-index: 1010 !important;
+}
+
+/* This targets the specific hamburger menu with the Blazor-generated attributes */
+.hamburger-menu[b-4oy3az7odj] {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Ensure clean positioning for the navbar brand */
+.navbar-brand {
+    margin-right: auto;
 }

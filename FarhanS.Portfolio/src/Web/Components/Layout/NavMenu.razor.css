@@ -37,22 +37,27 @@
     transition: transform var(--navbar-transition-time) var(--navbar-transition-easing);
 }
 
+/* Add this to ensure the navbar container properly positions elements */
 .navbar-container {
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     width: 100%;
     padding: 0.5rem 1rem;
-    position: relative;
 }
 
-.navbar-brand-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex: 1;
+/* Force the hamburger menu button to the far right */
+.navbar-toggler[b-4oy3az7odj], 
+.navbar-toggler {
+    position: absolute !important;
+    right: 15px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    margin: 0 !important;
+    z-index: 1020 !important;
 }
 
+/* Ensure the brand stays left */
 .navbar-brand {
     font-size: 1.5rem;
     font-weight: 600;
@@ -60,6 +65,7 @@
     text-decoration: none;
     padding: 0.5rem 0;
     transition: all var(--navbar-transition-time) var(--navbar-transition-easing);
+    margin-right: auto; /* Push content to the left */
 }
 
 .navbar-brand:hover {
