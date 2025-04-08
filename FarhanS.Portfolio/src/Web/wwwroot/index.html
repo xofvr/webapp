@@ -88,20 +88,10 @@
     <!-- Navigation script - loaded after main app -->
     <script src="js/navigation.js" defer></script>
     
+    <!-- Service worker manager script -->
+    <script src="js/service-worker-manager.js" defer></script>
+    
     <script>
-        // Register service worker after page load
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('service-worker.js')
-                    .then(function(registration) {
-                        console.log('Service Worker registered with scope:', registration.scope);
-                    })
-                    .catch(function(error) {
-                        console.log('Service Worker registration failed:', error);
-                    });
-            });
-        }
-        
         // Handle Blazor errors gracefully
         window.addEventListener('unhandledrejection', function(event) {
             console.log('Unhandled Promise Rejection:', event.reason);
