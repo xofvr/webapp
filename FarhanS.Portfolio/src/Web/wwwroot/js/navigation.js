@@ -58,6 +58,28 @@ function initializeSmoothScroll() {
     }
 }
 
+// Explicitly handle section scrolling from Blazor component
+function scrollToSection(sectionId) {
+    if (!sectionId || sectionId === '#') return;
+    
+    const targetElement = document.querySelector(sectionId);
+    if (targetElement) {
+        // Small delay to allow any UI updates to complete
+        setTimeout(() => {
+            const headerHeight = document.querySelector('.navbar-container')?.offsetHeight || 0;
+            const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+            
+            window.scrollTo({
+                top: targetPosition - headerHeight - 20, // Extra padding for better visibility
+                behavior: 'smooth'
+            });
+            
+            // Update URL hash without causing additional scrolling
+            history.pushState(null, null, sectionId);
+        }, 10);
+    }
+}
+
 // Track section visibility for navigation highlighting
 function registerIntersectionObservers() {
     const sections = document.querySelectorAll('section[id]');
@@ -129,6 +151,9 @@ window.navigationManager = {
     registerIntersectionObservers: registerIntersectionObservers,
     setupNavbarAnimation: setupNavbarAnimation
 };
+
+// Add the new scrollToSection function to window for direct calling from Blazor
+window.scrollToSection = scrollToSection;
 
 // Initialize after document load
 document.addEventListener('DOMContentLoaded', function() {

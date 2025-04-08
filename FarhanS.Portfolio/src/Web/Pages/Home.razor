@@ -334,7 +334,7 @@ else if (section == "projects")
                                         <p class="achievement-description text-muted">Industry Project</p>
                                     </div>
                                 </div>
-                                <p>Designed and implemented a vector database architecture for a context-aware LLM chatbot for technical documentation.</p>
+                                <p>Designed and implemented a vector database for a context-aware LLM chatbot for technical documentation.</p>
 
                             
                             <!-- Achievement 2: Azure ML Deployment -->
@@ -348,7 +348,7 @@ else if (section == "projects")
                                         <p class="achievement-description text-muted">Cross-Functional Project</p>
                                     </div>
                                 </div>
-                                <p>Deployed ML model endpoints on Azure. Implemented a CI/CD pipeline. that enabled debugging, faster iteration and delivery of new features. </p>
+                                <p>Deployed ML model endpoints on Azure. Implemented CI/CD pipeline that enabled debugging, faster iteration and delivery of new features.</p>
                             
                             <!-- Achievement 3: Dean's List -->
                             <div class="achievement-card">
@@ -358,7 +358,7 @@ else if (section == "projects")
                                     </div>
                                     <div class="ms-3">
                                         <h3 class="achievement-title">Dean's List Recognition</h3>
-                                        <p class="achievement-description text-muted">University of the West of England</p>
+                                        <p class="achievement-description text-muted">University of the West of England, Bristol</p>
                                     </div>
                                 </div>
                                 <p>Consistently demonstrated top academic performance across multiple years, maintaining high grades in challenging technical modules like Machine Learning, Advanced Software Development, and Computational Systems. Achieved distinction-level results in key computer science subjects, showcasing strong analytical and problem-solving skills.</p>
@@ -409,69 +409,6 @@ else if (section == "projects")
                                 <p>Education data is being loaded...</p>
                             </div>
                         }
-                    </div>
-                </div>
-            </section>
-        }
-        else if (section == "certifications")
-        {
-            <!-- Certifications Section -->
-            <section id="certifications" class="py-5">
-                <div class="container">
-                    <div class="row mb-4">
-                        <div class="col-lg-8 mx-auto text-center">
-                            <h2 class="section-title mb-3">Certifications</h2>
-                            <div class="section-divider mb-4"></div>
-                            <p class="lead">Professional credentials that validate my expertise</p>
-                        </div>
-                    </div>
-                    
-                    <div class="row g-4">
-                        <div class="col-lg-10 mx-auto">
-                            <!-- Azure AI Fundamentals -->
-                            <div class="certification-card">
-                                <img src="images/microsoft-cert.png" alt="Microsoft" class="certification-logo" 
-                                     onerror="this.onerror=null; this.src='https://logos-world.net/wp-content/uploads/2021/02/Microsoft-Azure-Symbol.png'; this.style.background='#fff'; this.style.padding='5px';">
-                                <div class="certification-content">
-                                    <h3 class="certification-name">Microsoft Azure AI Fundamentals</h3>
-                                    <p class="certification-issuer">Microsoft</p>
-                                    <p class="certification-date">Issued March 2025</p>
-                                </div>
-                            </div>
-                            
-                            <!-- Azure Data Scientist Associate -->
-                            <div class="certification-card">
-                                <img src="images/microsoft-cert.png" alt="Microsoft" class="certification-logo"
-                                     onerror="this.onerror=null; this.src='https://logos-world.net/wp-content/uploads/2021/02/Microsoft-Azure-Symbol.png'; this.style.background='#fff'; this.style.padding='5px';">
-                                <div class="certification-content">
-                                    <h3 class="certification-name">Azure Data Scientist Associate</h3>
-                                    <p class="certification-issuer">Microsoft</p>
-                                    <p class="certification-date">Issued January 2025</p>
-                                </div>
-                            </div>
-                            
-                            <!-- Azure Developer Associate -->
-                            <div class="certification-card">
-                                <img src="images/microsoft-cert.png" alt="Microsoft" class="certification-logo"
-                                     onerror="this.onerror=null; this.src='https://logos-world.net/wp-content/uploads/2021/02/Microsoft-Azure-Symbol.png'; this.style.background='#fff'; this.style.padding='5px';">
-                                <div class="certification-content">
-                                    <h3 class="certification-name">Azure Developer Associate</h3>
-                                    <p class="certification-issuer">Microsoft</p>
-                                    <p class="certification-date">Issued November 2024</p>
-                                </div>
-                            </div>
-                            
-                            <!-- Deep Learning Specialization -->
-                            <div class="certification-card">
-                                <img src="images/coursera-cert.png" alt="Coursera" class="certification-logo"
-                                     onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Coursera-Logo_600x600.svg/1200px-Coursera-Logo_600x600.svg.png'; this.style.background='#fff'; this.style.padding='5px';">
-                                <div class="certification-content">
-                                    <h3 class="certification-name">Deep Learning Specialization</h3>
-                                    <p class="certification-issuer">Coursera (deeplearning.ai)</p>
-                                    <p class="certification-date">Issued October 2024</p>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </section>
@@ -577,7 +514,7 @@ else if (section == "projects")
 
 @code {
     private LinkedInProfile? Profile { get; set; }
-    private string[] sections = new[] { "about", "experience", "skills", "projects", "achievements", "education", "certifications", "contact" };
+    private string[] sections = new[] { "about", "experience", "skills", "projects", "achievements", "education", "contact" };
     
     // Contact form properties
     private bool _isSubmitting = false;
