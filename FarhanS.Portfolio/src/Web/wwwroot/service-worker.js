@@ -2,7 +2,7 @@
 // It provides offline support and caching for better performance
 
 // Increment this version when you update your service worker
-const CACHE_VERSION = 'v1.0.2';
+const CACHE_VERSION = 'v1.0.3';
 
 // Use a fixed CACHE_NAME for each deployment
 // Will be updated when a new version is deployed
@@ -26,6 +26,8 @@ const PRECACHE_ASSETS = [
 
 // Install event - precache all essential assets
 self.addEventListener('install', event => {
+  console.log(`Service worker installing version ${CACHE_VERSION}`);
+  
   // Skip waiting to ensure the new service worker activates immediately
   self.skipWaiting();
   
@@ -39,6 +41,8 @@ self.addEventListener('install', event => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', event => {
+  console.log(`Service worker activating version ${CACHE_VERSION}`);
+  
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
@@ -50,26 +54,87 @@ self.addEventListener('activate', event => {
         })
       );
     }).then(() => {
+      // Clear the browser's navigation preload cache if available
+      if (self.registration.navigationPreload) {
+        return self.registration.navigationPreload.disable();
+      }
+    }).then(() => {
       // Immediately claim clients so the updated service worker controls all pages
       return self.clients.claim();
+    }).then(() => {
+      // Reload all open tabs to ensure they have the latest version
+      return self.clients.matchAll({ type: 'window' }).then(clients => {
+        clients.forEach(client => {
+          client.navigate(client.url);
+        });
+      });
     })
   );
 });
 
 // Fetch event - serve from cache or network with improved refresh logic
 self.addEventListener('fetch', event => {
+  // For non-GET requests, go to the network
+  if (event.request.method !== 'GET') {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+  
   // Define API endpoints for special handling
   const apiEndpoints = [
     'api.farhans-portfolio.com',
     'js.monitor.azure.com'
   ];
   
+  // Define external resource domains
+  const externalResourceDomains = [
+    'fonts.googleapis.com',
+    'fonts.gstatic.com',
+    'logos-world.net',
+    'upload.wikimedia.org',
+    'cdn.jsdelivr.net'
+  ];
+  
+  // Special handling for external resources - always go to network first
+  if (externalResourceDomains.some(domain => event.request.url.includes(domain))) {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          // Only cache successful responses
+          if (response.ok) {
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseToCache);
+            });
+          }
+          return response;
+        })
+        .catch(() => {
+          // If network fails, try to serve from cache
+          return caches.match(event.request);
+        })
+    );
+    return;
+  }
+  
   // Handle API requests - use network first, fall back to cache
   if (apiEndpoints.some(endpoint => event.request.url.includes(endpoint))) {
     event.respondWith(
-      fetch(event.request).catch(() => {
-        return caches.match(event.request);
-      })
+      fetch(event.request)
+        .then(response => {
+          // Cache successful API responses
+          if (response.ok) {
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              // Set a short cache expiration for API responses
+              cache.put(event.request, responseToCache);
+            });
+          }
+          return response;
+        })
+        .catch(() => {
+          return caches.match(event.request);
+        })
     );
     return;
   }
@@ -78,86 +143,119 @@ self.addEventListener('fetch', event => {
   if (event.request.url.includes('service-worker-assets.js')) {
     // Always get the latest assets manifest from the network
     event.respondWith(
-      fetch(event.request).catch(() => {
-        return caches.match(event.request);
-      })
+      fetch(event.request)
+        .then(response => {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseToCache);
+          });
+          return response;
+        })
+        .catch(() => {
+          return caches.match(event.request);
+        })
     );
     return;
   }
   
-  // Check for framework files to ensure we get the latest version
-  if (event.request.url.includes('/_framework/')) {
+  // For HTML navigation requests (including root path /) use a "Network First" strategy
+  if (isNavigationRequest(event.request) || event.request.url.endsWith('/')) {
     event.respondWith(
-      fetch(event.request).then(response => {
-        // Cache the new framework files
-        const responseToCache = response.clone();
-        caches.open(CACHE_NAME).then(cache => {
-          cache.put(event.request, responseToCache);
-        });
-        return response;
-      }).catch(() => {
-        // Fall back to cache if network fails
-        return caches.match(event.request);
-      })
-    );
-    return;
-  }
-  
-  // For HTML navigation requests use a "Network First" strategy to ensure fresh content
-  if (isNavigationRequest(event.request)) {
-    event.respondWith(
-      fetch(event.request).then(response => {
-        // Clone the response as it can only be consumed once
-        const responseToCache = response.clone();
-        
-        // Update the cache with the new response
-        caches.open(CACHE_NAME).then(cache => {
-          cache.put(event.request, responseToCache);
-        });
-        
-        return response;
-      }).catch(() => {
-        // Fall back to cache if network fails
-        return caches.match(event.request).then(cachedResponse => {
-          return cachedResponse || caches.match('/index.html');
-        });
-      })
+      fetch(event.request)
+        .then(response => {
+          // Cache the response
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseToCache);
+          });
+          return response;
+        })
+        .catch(() => {
+          // Fall back to cache if network fails
+          return caches.match(event.request)
+            .then(cachedResponse => {
+              if (cachedResponse) {
+                return cachedResponse;
+              }
+              // If no cached version of the page, return cached index.html
+              return caches.match('/index.html');
+            });
+        })
     );
     return;
   }
 
-  // For non-API requests, use a "Cache First" strategy but with network update
-  if (!event.request.url.includes('/api/')) {
+  // For framework files in /_framework/ use a "Cache First then Network" strategy
+  if (event.request.url.includes('/_framework/')) {
     event.respondWith(
-      caches.match(event.request).then(cachedResponse => {
-        // Start a network fetch to update the cache in the background
-        const fetchPromise = fetch(event.request).then(networkResponse => {
-          // Don't cache responses from external domains or failed responses
-          if (networkResponse.ok && event.request.url.startsWith(self.location.origin)) {
-            // Update the cache with the new response
-            caches.open(CACHE_NAME).then(cache => {
-              cache.put(event.request, networkResponse.clone());
-            });
+      caches.match(event.request)
+        .then(cachedResponse => {
+          if (cachedResponse) {
+            // Start a fetch to update the cache in background
+            fetch(event.request)
+              .then(response => {
+                if (response.ok) {
+                  caches.open(CACHE_NAME).then(cache => {
+                    cache.put(event.request, response);
+                  });
+                }
+              })
+              .catch(() => { /* Ignore fetch errors */ });
+            
+            return cachedResponse;
           }
-          return networkResponse;
-        }).catch(() => {
-          // Silently fail if network fetch fails - we'll use cache instead
-          return null;
-        });
-        
-        // Return cached response immediately if available
-        // If not, wait for the network response
-        return cachedResponse || fetchPromise;
-      })
+          
+          // If not in cache, get from network and cache
+          return fetch(event.request)
+            .then(response => {
+              if (response.ok) {
+                // Clone the response for caching
+                const responseToCache = response.clone();
+                caches.open(CACHE_NAME).then(cache => {
+                  cache.put(event.request, responseToCache);
+                });
+              }
+              return response;
+            });
+        })
     );
-  } else {
-    // For API requests, use a "Network First" strategy
-    event.respondWith(
-      fetch(event.request).catch(() => {
-        return caches.match(event.request);
-      })
-    );
+    return;
   }
+
+  // For all other assets, use a "Cache First" strategy with network update
+  event.respondWith(
+    caches.match(event.request)
+      .then(cachedResponse => {
+        // Return cached response if available
+        if (cachedResponse) {
+          // Start a network fetch in the background to update cache
+          fetch(event.request)
+            .then(networkResponse => {
+              if (networkResponse.ok) {
+                caches.open(CACHE_NAME).then(cache => {
+                  cache.put(event.request, networkResponse);
+                });
+              }
+            })
+            .catch(() => { /* Ignore fetch errors */ });
+          
+          return cachedResponse;
+        }
+        
+        // If not in cache, get from network
+        return fetch(event.request)
+          .then(response => {
+            if (response.ok && event.request.url.startsWith(self.location.origin)) {
+              // Clone the response for caching
+              const responseToCache = response.clone();
+              caches.open(CACHE_NAME).then(cache => {
+                cache.put(event.request, responseToCache);
+              });
+            }
+            return response;
+          });
+      })
+  );
 });
 
 // Determine if a request is a navigation request
@@ -180,14 +278,21 @@ self.addEventListener('message', event => {
   } else if (event.data && event.data.type === 'SKIP_WAITING') {
     // Skip waiting and activate immediately when requested
     self.skipWaiting();
-  }
-});
-
-// Optional: Sync event for background syncing when back online
-self.addEventListener('sync', event => {
-  if (event.tag === 'background-sync') {
-    // Implement background sync logic here if needed
-    console.log('Service worker performing background sync');
+  } else if (event.data && event.data.type === 'CLEAR_ALL_CACHES') {
+    // Completely clear all caches and reload all clients
+    event.waitUntil(
+      caches.keys().then(cacheNames => {
+        return Promise.all(
+          cacheNames.map(cacheName => caches.delete(cacheName))
+        );
+      }).then(() => {
+        return self.clients.matchAll({ type: 'window' }).then(clients => {
+          clients.forEach(client => {
+            client.navigate(client.url);
+          });
+        });
+      })
+    );
   }
 });
 
