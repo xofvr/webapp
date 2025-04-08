@@ -3,8 +3,9 @@
 @using FarhanS.Portfolio.Web.Models
 @inject IJSRuntime JSRuntime
 @inject FarhanS.Portfolio.Web.Services.ILinkedInService LinkedInService
+@inject FarhanS.Portfolio.Web.Services.IContactService ContactService
 
-<PageTitle>@(Profile?.FullName ?? "Farhan S.") - Software Developer Portfolio</PageTitle>
+<PageTitle>@(Profile?.FullName ?? "Farhan S.") - Data Scientist & Software Engineer</PageTitle>
 
 <!-- Hero section -->
 <div class="hero-section py-5">
@@ -12,9 +13,9 @@
         <div class="row align-items-center">
             <div class="col-lg-6">
                 <h1 class="display-4 fw-bold">@(Profile?.FullName ?? "Farhan S.")</h1>
-                <h2 class="text-primary">@(Profile?.Title ?? "Software Developer")</h2>
+                <h2 class="text-primary">@(Profile?.Title ?? "Data Scientist & Software Engineer")</h2>
                 <p class="lead my-4">
-                    Building modern web applications with cutting-edge technologies.
+                    Transforming data into insights and building impactful solutions with cutting-edge technologies.
                 </p>
                 <div class="d-flex gap-3">
                     <a href="#contact" class="btn btn-primary px-4 py-2">Get In Touch</a>
@@ -40,12 +41,13 @@
                     <div class="row">
                         <div class="col-lg-8 offset-lg-2">
                             <p class="lead">
-                                @(Profile?.Summary ?? "I'm a passionate software developer with expertise in modern web technologies.")
+                                @(Profile?.Summary ?? "I blend data science expertise with software engineering skills to create intelligent, data-driven solutions.")
                             </p>
                             <p>
-                                With a background in software development, I bring a unique perspective that emphasizes both technical 
-                                performance and exceptional user experience. My goal is to build applications that are not only 
-                                functionally robust but also intuitive and accessible to users.
+                                With a unique background that spans both data science and software development, I bring a versatile perspective to 
+                                technical challenges. I specialize in transforming complex data into actionable insights while building robust, 
+                                scalable applications. My approach combines analytical rigor with software engineering best practices to deliver 
+                                solutions that are not only data-intelligent but also intuitive and accessible to users.
                             </p>
                         </div>
                     </div>
@@ -134,10 +136,28 @@
                                         <div class="card-body">
                                             <h3 class="card-title h5"><i class="bi bi-code-slash me-2"></i>Languages</h3>
                                             <div class="mt-3">
+                                                <span class="badge bg-primary me-1 mb-1">Python</span>
+                                                <span class="badge bg-primary me-1 mb-1">R</span>
                                                 <span class="badge bg-primary me-1 mb-1">C#</span>
                                                 <span class="badge bg-primary me-1 mb-1">JavaScript</span>
-                                                <span class="badge bg-primary me-1 mb-1">TypeScript</span>
+                                                <span class="badge bg-primary me-1 mb-1">SQL</span>
                                                 <span class="badge bg-primary me-1 mb-1">HTML/CSS</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="card skill-card h-100 shadow-sm">
+                                        <div class="card-body">
+                                            <h3 class="card-title h5"><i class="bi bi-bar-chart me-2"></i>Data Science</h3>
+                                            <div class="mt-3">
+                                                <span class="badge bg-primary me-1 mb-1">Machine Learning</span>
+                                                <span class="badge bg-primary me-1 mb-1">Data Analysis</span>
+                                                <span class="badge bg-primary me-1 mb-1">Pandas</span>
+                                                <span class="badge bg-primary me-1 mb-1">NumPy</span>
+                                                <span class="badge bg-primary me-1 mb-1">Scikit-learn</span>
+                                                <span class="badge bg-primary me-1 mb-1">TensorFlow</span>
+                                                <span class="badge bg-primary me-1 mb-1">Statistical Modeling</span>
                                             </div>
                                         </div>
                                     </div>
@@ -150,6 +170,8 @@
                                                 <span class="badge bg-primary me-1 mb-1">.NET Core</span>
                                                 <span class="badge bg-primary me-1 mb-1">Blazor</span>
                                                 <span class="badge bg-primary me-1 mb-1">ASP.NET</span>
+                                                <span class="badge bg-primary me-1 mb-1">Flask</span>
+                                                <span class="badge bg-primary me-1 mb-1">Django</span>
                                             </div>
                                         </div>
                                     </div>
@@ -162,12 +184,134 @@
                                                 <span class="badge bg-primary me-1 mb-1">MySQL</span>
                                                 <span class="badge bg-primary me-1 mb-1">SQL Server</span>
                                                 <span class="badge bg-primary me-1 mb-1">MongoDB</span>
+                                                <span class="badge bg-primary me-1 mb-1">PostgreSQL</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="card skill-card h-100 shadow-sm">
+                                        <div class="card-body">
+                                            <h3 class="card-title h5"><i class="bi bi-cloud me-2"></i>Cloud & Tools</h3>
+                                            <div class="mt-3">
+                                                <span class="badge bg-primary me-1 mb-1">Azure</span>
+                                                <span class="badge bg-primary me-1 mb-1">Docker</span>
+                                                <span class="badge bg-primary me-1 mb-1">Git</span>
+                                                <span class="badge bg-primary me-1 mb-1">CI/CD</span>
+                                                <span class="badge bg-primary me-1 mb-1">Jupyter</span>
+                                                <span class="badge bg-primary me-1 mb-1">Power BI</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             }
                         }
+                    </div>
+                </div>
+            </section>
+        }
+        else if (section == "projects")
+        {
+            <section id="projects" class="py-5">
+                <div class="container">
+                    <h2 class="section-title">Projects</h2>
+                    <div class="row row-cols-1 row-cols-md-2 g-4">
+                        
+                        <!-- Project 1: Data-Driven Web Application -->
+                        <div class="col">
+                            <div class="card project-card h-100 shadow-sm">
+                                <div class="card-body">
+                                    <h3 class="card-title h5">Predictive Analytics Dashboard</h3>
+                                    <span class="badge bg-primary mb-2">Data Science + Web Development</span>
+                                    <p class="card-text">
+                                        A full-stack web application that uses machine learning algorithms to predict business trends and visualizes 
+                                        insights through interactive dashboards built with .NET Core and React.
+                                    </p>
+                                    <div class="mt-3">
+                                        <span class="badge bg-secondary me-1 mb-1">Python</span>
+                                        <span class="badge bg-secondary me-1 mb-1">C#</span>
+                                        <span class="badge bg-secondary me-1 mb-1">.NET Core</span>
+                                        <span class="badge bg-secondary me-1 mb-1">Machine Learning</span>
+                                        <span class="badge bg-secondary me-1 mb-1">SQL Server</span>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-transparent border-0">
+                                    <a href="#" class="btn btn-sm btn-outline-primary disabled">View Project</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Project 2: Natural Language Processing API -->
+                        <div class="col">
+                            <div class="card project-card h-100 shadow-sm">
+                                <div class="card-body">
+                                    <h3 class="card-title h5">Sentiment Analysis API</h3>
+                                    <span class="badge bg-primary mb-2">ML + API Development</span>
+                                    <p class="card-text">
+                                        A RESTful API built with ASP.NET Core that leverages natural language processing models to analyze 
+                                        sentiment in customer feedback and social media data.
+                                    </p>
+                                    <div class="mt-3">
+                                        <span class="badge bg-secondary me-1 mb-1">NLP</span>
+                                        <span class="badge bg-secondary me-1 mb-1">ASP.NET Core</span>
+                                        <span class="badge bg-secondary me-1 mb-1">Azure</span>
+                                        <span class="badge bg-secondary me-1 mb-1">TensorFlow</span>
+                                        <span class="badge bg-secondary me-1 mb-1">API Design</span>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-transparent border-0">
+                                    <a href="#" class="btn btn-sm btn-outline-primary disabled">View Project</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Project 3: Data Pipeline -->
+                        <div class="col">
+                            <div class="card project-card h-100 shadow-sm">
+                                <div class="card-body">
+                                    <h3 class="card-title h5">Automated ETL Pipeline</h3>
+                                    <span class="badge bg-primary mb-2">Data Engineering</span>
+                                    <p class="card-text">
+                                        A robust data processing pipeline built with .NET and Python that automates the extraction, transformation, 
+                                        and loading of large datasets from multiple sources to a centralized data warehouse.
+                                    </p>
+                                    <div class="mt-3">
+                                        <span class="badge bg-secondary me-1 mb-1">ETL</span>
+                                        <span class="badge bg-secondary me-1 mb-1">Python</span>
+                                        <span class="badge bg-secondary me-1 mb-1">.NET</span>
+                                        <span class="badge bg-secondary me-1 mb-1">Azure Data Factory</span>
+                                        <span class="badge bg-secondary me-1 mb-1">SQL</span>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-transparent border-0">
+                                    <a href="#" class="btn btn-sm btn-outline-primary disabled">View Project</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Project 4: Mobile App with ML -->
+                        <div class="col">
+                            <div class="card project-card h-100 shadow-sm">
+                                <div class="card-body">
+                                    <h3 class="card-title h5">Smart Recommendation Engine</h3>
+                                    <span class="badge bg-primary mb-2">ML + Software Architecture</span>
+                                    <p class="card-text">
+                                        A recommendation system that leverages collaborative filtering and content-based algorithms to provide 
+                                        personalized product suggestions, deployed as a scalable microservice architecture.
+                                    </p>
+                                    <div class="mt-3">
+                                        <span class="badge bg-secondary me-1 mb-1">Machine Learning</span>
+                                        <span class="badge bg-secondary me-1 mb-1">Microservices</span>
+                                        <span class="badge bg-secondary me-1 mb-1">C#</span>
+                                        <span class="badge bg-secondary me-1 mb-1">Python</span>
+                                        <span class="badge bg-secondary me-1 mb-1">Docker</span>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-transparent border-0">
+                                    <a href="#" class="btn btn-sm btn-outline-primary disabled">View Project</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -213,21 +357,66 @@
                             <div class="card contact-card shadow-sm card-equal-height">
                                 <div class="card-body d-flex flex-column">
                                     <h3 class="h5 mb-4">Let's Connect</h3>
-                                    <form class="flex-grow-1">
-                                        <div class="mb-3">
-                                            <label for="name" class="form-label">Name</label>
-                                            <input type="text" class="form-control" id="name" placeholder="Your Name">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="email" class="form-label">Email</label>
-                                            <input type="email" class="form-control" id="email" placeholder="your.email@example.com">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="message" class="form-label">Message</label>
-                                            <textarea class="form-control" id="message" rows="4" placeholder="How can I help you?"></textarea>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary">Send Message</button>
-                                    </form>
+                                    
+                                    @if (_formSubmitted)
+                                    {
+                                        @if (_formSubmitSuccess)
+                                        {
+                                            <div class="alert alert-success">
+                                                <i class="bi bi-check-circle me-2"></i> Thank you for your message! I'll get back to you soon.
+                                            </div>
+                                            <button class="btn btn-outline-primary mt-3" @onclick="ResetForm">Send another message</button>
+                                        }
+                                        else
+                                        {
+                                            <div class="alert alert-danger">
+                                                <i class="bi bi-exclamation-triangle me-2"></i> Sorry, there was a problem sending your message. Please try again or contact me directly at contact@farhans.dev.
+                                            </div>
+                                            <button class="btn btn-primary mt-3" @onclick="ResetForm">Try Again</button>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <!-- Replace the EditForm with a regular HTML form that uses FormSubmit -->
+                                        <form action="https://formsubmit.co/farhan.shakeel@icloud.com" method="POST" class="flex-grow-1" onsubmit="@FormSubmitted">
+                                            <!-- FormSubmit configuration -->
+                                            <input type="hidden" name="_subject" value="New portfolio contact from website">
+                                            <input type="hidden" name="_captcha" value="false">
+                                            <input type="hidden" name="_template" value="table">
+                                            <input type="hidden" name="_next" value="https://farhans.dev/#contact">
+                                            
+                                            <div class="mb-3">
+                                                <label for="name" class="form-label">Name</label>
+                                                <input type="text" id="name" name="name" class="form-control" placeholder="Your Name" required>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="email" class="form-label">Email</label>
+                                                <input type="email" id="email" name="email" class="form-control" placeholder="your.email@example.com" required>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="message" class="form-label">Message</label>
+                                                <textarea id="message" name="message" class="form-control" rows="4" placeholder="How can I help you?" required minlength="10"></textarea>
+                                            </div>
+                                            
+                                            <button type="submit" class="btn btn-primary" disabled="@_isSubmitting">
+                                                @if (_isSubmitting)
+                                                {
+                                                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                                    <span>Sending...</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>Send Message</span>
+                                                }
+                                            </button>
+                                        </form>
+                                    }
+                                    
+                                    <div class="mt-auto text-center">
+                                        <p class="text-muted">I'll respond to your message within 24-48 hours</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -243,7 +432,7 @@
                                             <i class="bi bi-github fs-3"></i>
                                         </a>
                                     </div>
-                                    <p class="mb-4">Email: contact@farhans.dev</p>
+                                    <p class="mb-4">Email: farhan.shakeel@icloud.com</p>
                                     <div class="mt-auto text-center">
                                         <p class="text-muted">I'll respond to your message within 24-48 hours</p>
                                     </div>
@@ -259,7 +448,12 @@
 
 @code {
     private LinkedInProfile? Profile { get; set; }
-    private string[] sections = new[] { "about", "experience", "skills", "education", "contact" };
+    private string[] sections = new[] { "about", "experience", "skills", "projects", "education", "contact" };
+    
+    // Contact form properties
+    private bool _isSubmitting = false;
+    private bool _formSubmitted = false;
+    private bool _formSubmitSuccess = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -293,6 +487,7 @@
             "tools" => "bi-tools",
             "cloud" => "bi-cloud",
             "devops" => "bi-gear",
+            "data science" => "bi-bar-chart",
             _ => "bi-star"
         };
     }
@@ -300,5 +495,20 @@
     private async Task ToggleTheme()
     {
         await JSRuntime.InvokeVoidAsync("themeManager.toggle");
+    }
+    
+    // Simple JavaScript function to handle form submit
+    private void FormSubmitted()
+    {
+        _isSubmitting = true;
+        _formSubmitSuccess = true;
+        StateHasChanged();
+    }
+    
+    private void ResetForm()
+    {
+        _formSubmitted = false;
+        _formSubmitSuccess = false;
+        StateHasChanged();
     }
 }

@@ -1,16 +1,17 @@
 .navbar-toggler {
-    display: none;
     background: transparent;
     border: none;
     padding: 0.5rem;
     cursor: pointer;
+    display: block; /* Always display on mobile */
+    z-index: 1010; /* Ensure it stays above other elements */
 }
 
 .navbar-toggler-icon {
     display: inline-block;
     width: 1.5em;
     height: 1.5em;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(58, 158, a26, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(58, 158, 126, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: center;
     background-size: 100%;
@@ -27,6 +28,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    width: auto; /* Ensure this doesn't stretch too much */
+    min-width: 200px; /* Give some minimum width */
 }
 
 .top-row {
@@ -61,7 +64,7 @@
 }
 
 .nav-scrollable {
-    display: flex;
+    display: none; /* Hidden by default on mobile */
 }
 
 .nav-menu {
@@ -139,19 +142,18 @@
     }
 }
 
-@media (min-width: 641px) {
+@media (min-width: 769px) {
     .navbar-toggler {
         display: none;
     }
 
-    .collapse {
-        /* Never collapse the sidebar for wide screens */
-        display: block;
+    .nav-scrollable {
+        /* Always display on desktop */
+        display: block !important;
     }
 
-    .nav-scrollable {
-        /* Allow sidebar to scroll for tall menus */
-        height: calc(100vh - 3.5rem);
-        overflow-y: auto;
+    .nav-scrollable.collapse {
+        /* Never collapse on desktop */
+        display: block;
     }
 }

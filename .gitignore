@@ -125,6 +125,7 @@ dlldata.c
 appsettings.Development.json
 appsettings.Local.json
 Properties/launchSettings.json
+copilot-instructions.md
 
 # Backup & report files from converting an old project file
 # to a newer Visual Studio version
