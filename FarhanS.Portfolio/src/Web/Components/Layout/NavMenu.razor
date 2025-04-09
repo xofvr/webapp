@@ -14,27 +14,27 @@
     <div class="@NavMenuCssClass nav-scrollable" style="@NavMenuStyle">
         <nav class="nav-menu">
             <div class="nav-item">
-                <NavLink class="nav-link" href="#about" @onclick="CloseNavMenuOnMobile">
+                <NavLink class="nav-link" href="#about" @onclick="@(() => HandleNavLinkClick("#about"))">
                     <span class="bi bi-person-fill nav-icon" aria-hidden="true"></span> About
                 </NavLink>
             </div>
             <div class="nav-item">
-                <NavLink class="nav-link" href="#experience" @onclick="CloseNavMenuOnMobile">
+                <NavLink class="nav-link" href="#experience" @onclick="@(() => HandleNavLinkClick("#experience"))">
                     <span class="bi bi-briefcase-fill nav-icon" aria-hidden="true"></span> Experience
                 </NavLink>
             </div>
             <div class="nav-item">
-                <NavLink class="nav-link" href="#skills" @onclick="CloseNavMenuOnMobile">
+                <NavLink class="nav-link" href="#skills" @onclick="@(() => HandleNavLinkClick("#skills"))">
                     <span class="bi bi-tools nav-icon" aria-hidden="true"></span> Skills
                 </NavLink>
             </div>
             <div class="nav-item">
-                <NavLink class="nav-link" href="#education" @onclick="CloseNavMenuOnMobile">
+                <NavLink class="nav-link" href="#education" @onclick="@(() => HandleNavLinkClick("#education"))">
                     <span class="bi bi-mortarboard-fill nav-icon" aria-hidden="true"></span> Education
                 </NavLink>
             </div>
             <div class="nav-item">
-                <NavLink class="nav-link" href="#contact" @onclick="CloseNavMenuOnMobile">
+                <NavLink class="nav-link" href="#contact" @onclick="@(() => HandleNavLinkClick("#contact"))">
                     <span class="bi bi-envelope-fill nav-icon" aria-hidden="true"></span> Contact
                 </NavLink>
             </div>
@@ -46,7 +46,8 @@
     private bool collapseNavMenu = true; // Default to collapsed on mobile
     private bool isMobileView = false;
     
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : "show";
+    // Improved NavMenuCssClass to handle desktop differently
+    private string? NavMenuCssClass => isMobileView ? (collapseNavMenu ? "collapse" : "show") : "show";
     
     // Add animation style
     private string NavMenuStyle => !collapseNavMenu 
@@ -192,12 +193,16 @@
         collapseNavMenu = !collapseNavMenu;
     }
     
-    private void CloseNavMenuOnMobile()
+    // Enhanced method to handle navigation link clicks
+    private async Task HandleNavLinkClick(string sectionId)
     {
-        // Only close the menu if we're on mobile
+        // Only close menu on mobile
         if (isMobileView)
         {
             collapseNavMenu = true;
         }
+        
+        // Ensure smooth scrolling works properly
+        await JSRuntime.InvokeVoidAsync("scrollToSection", sectionId);
     }
 }
