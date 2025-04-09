@@ -444,7 +444,7 @@ else if (section == "projects")
                                     }
                                     else
                                     {
-                                        <form id="contactForm" action="https://formsubmit.co/farhan.shakeel@icloud.com" method="POST" @onsubmit="HandleSubmit" onsubmit="return window.contactFormManager.beginFormSubmission(event)">
+                                        <form id="contactForm" action="https://formsubmit.co/farhan.shakeel@icloud.com" method="POST" onsubmit="return window.contactFormManager.beginFormSubmission(event, '@IsLocalHost().ToString().ToLower()')">
                                             <!-- FormSubmit configuration -->
                                             <input type="hidden" name="_subject" value="Portfolio Contact Form: New Message">
                                             <input type="hidden" name="_captcha" value="false">
@@ -455,7 +455,6 @@ else if (section == "projects")
                                             {
                                                 <input type="hidden" name="_debug" value="true">
                                             }
-                                            <input type="text" name="_honey" style="display:none">
                                             
                                             <div class="mb-3">
                                                 <label for="name" class="form-label">Name</label>
