@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Components.Web
 @using FarhanS.Portfolio.Web.Models
 @inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
 @inject FarhanS.Portfolio.Web.Services.ILinkedInService LinkedInService
 @inject FarhanS.Portfolio.Web.Services.IContactService ContactService
 
@@ -443,13 +444,18 @@ else if (section == "projects")
                                     }
                                     else
                                     {
-                                        <!-- Replace the EditForm with a regular HTML form that uses FormSubmit -->
-                                        <form action="https://formsubmit.co/farhan.shakeel@icloud.com" method="POST" class="flex-grow-1" onsubmit="@FormSubmitted">
+                                        <form id="contactForm" action="https://formsubmit.co/farhan.shakeel@icloud.com" method="POST" @onsubmit="HandleSubmit" onsubmit="return window.contactFormManager.beginFormSubmission(event)">
                                             <!-- FormSubmit configuration -->
-                                            <input type="hidden" name="_subject" value="New portfolio contact from website">
+                                            <input type="hidden" name="_subject" value="Portfolio Contact Form: New Message">
                                             <input type="hidden" name="_captcha" value="false">
                                             <input type="hidden" name="_template" value="table">
-                                            <input type="hidden" name="_next" value="https://farhans.dev/#contact">
+                                            <input type="hidden" name="_next" value="@GetFormRedirectUrl()">
+                                            <!-- For local development, set _debug to true -->
+                                            @if (IsLocalHost())
+                                            {
+                                                <input type="hidden" name="_debug" value="true">
+                                            }
+                                            <input type="text" name="_honey" style="display:none">
                                             
                                             <div class="mb-3">
                                                 <label for="name" class="form-label">Name</label>
@@ -533,6 +539,15 @@ else if (section == "projects")
         {
             // Initialize smooth scrolling
             await JSRuntime.InvokeVoidAsync("navigationManager.initializeSmoothScroll");
+            
+            // Check for form submission redirect parameter
+            var formSubmitted = await JSRuntime.InvokeAsync<bool>("contactFormManager.checkFormSubmissionStatus");
+            if (formSubmitted)
+            {
+                _formSubmitted = true;
+                _formSubmitSuccess = true;
+                StateHasChanged();
+            }
         }
     }
 
@@ -576,5 +591,56 @@ else if (section == "projects")
         _formSubmitted = false;
         _formSubmitSuccess = false;
         StateHasChanged();
+    }
+    
+    private async Task HandleSubmit()
+    {
+        _isSubmitting = true;
+        await JSRuntime.InvokeVoidAsync("contactFormManager.beginFormSubmission");
+        
+        // For local development, manually handle the form submission process
+        if (IsLocalHost())
+        {
+            try 
+            {
+                // Use our JavaScript helper to simulate form submission in local environment
+                await Task.Delay(1500); // Simulate network delay
+                
+                // Simulate successful form submission
+                _formSubmitted = true;
+                _formSubmitSuccess = true;
+                
+                // Important: Prevent default form submission in local environment
+                // This keeps the form on the page for testing
+                StateHasChanged();
+                return;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error handling local form submission: {ex.Message}");
+                _formSubmitted = true;
+                _formSubmitSuccess = false;
+            }
+            
+            StateHasChanged();
+            return;
+        }
+        
+        // In production, let the form submit naturally to FormSubmit.co
+        StateHasChanged();
+    }
+
+    private string GetFormRedirectUrl()
+    {
+        // This returns the current URL with a query parameter that indicates the form was submitted
+        // FormSubmit.co will redirect back to this URL after form submission
+        return $"{NavigationManager.BaseUri.TrimEnd('/')}/?formSubmitted=true";
+    }
+
+    private bool IsLocalHost()
+    {
+        // Check for common local development hostnames
+        string host = new Uri(NavigationManager.BaseUri).Host.ToLower();
+        return host == "localhost" || host == "127.0.0.1";
     }
 }
