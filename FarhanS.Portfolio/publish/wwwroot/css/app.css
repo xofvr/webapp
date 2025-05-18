@@ -24,6 +24,23 @@ a, .btn-link {
     padding-top: 1.1rem;
 }
 
+/* Loading Spinner Styles */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    background-color: #fff;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+    color: #1b6ec2 !important;
+}
+
 .valid.modified:not([type=checkbox]) {
     outline: 1px solid #26b050;
 }

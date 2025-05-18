@@ -5,7 +5,27 @@
 self.importScripts('./service-worker-assets.js');
 self.addEventListener('install', event => event.waitUntil(onInstall(event)));
 self.addEventListener('activate', event => event.waitUntil(onActivate(event)));
-self.addEventListener('fetch', event => event.respondWith(onFetch(event)));
+self.addEventListener('fetch', event => {
+    // Special handling for external resources like CDN
+    const url = new URL(event.request.url);
+    const isCDN = url.hostname.includes('jsdelivr.net') || 
+                 url.hostname.includes('fonts.googleapis.com') || 
+                 url.hostname.includes('fonts.gstatic.com');
+    
+    // If it's a CDN resource, use a network-first strategy
+    if (isCDN) {
+        event.respondWith(
+            fetch(event.request)
+                .catch(error => {
+                    console.error('Failed to fetch from CDN, falling back to cache:', error);
+                    return caches.match(event.request);
+                })
+        );
+    } else {
+        // For other resources, use the default fetch handler
+        event.respondWith(onFetch(event));
+    }
+});
 
 const cacheNamePrefix = 'offline-cache-';
 const cacheName = `${cacheNamePrefix}${self.assetsManifest.version}`;

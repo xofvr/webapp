@@ -4,33 +4,93 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FarhanS.Portfolio</title>
+    <meta name="description" content="Farhan S. - Software Developer Portfolio showcasing skills, projects and professional experience" />
+    <title>Farhan S. - Portfolio</title>
     <base href="/" />
+    
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://*.azurestaticapps.net;
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.monitor.azure.com https://cdn.jsdelivr.net; 
+        script-src-elem 'self' 'unsafe-inline' https://js.monitor.azure.com https://cdn.jsdelivr.net; 
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; 
+        style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; 
+        img-src 'self' data: https://logos-world.net https://upload.wikimedia.org https://*.amazonaws.com https://*.cloudfront.net https://*.azurestaticapps.net; 
+        font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; 
+        connect-src 'self' https://*.azurestaticapps.net https://api.farhans-portfolio.com https://staging-api.farhans-portfolio.com https://farhans-portfolio.com https://*.farhans-portfolio.com https://js.monitor.azure.com https://dc.services.visualstudio.com https://cdn.jsdelivr.net https://fonts.googleapis.com wss://*.farhans-portfolio.com; 
+        manifest-src 'self';
+        worker-src 'self' blob:;
+    " />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png" />
+    
+    <!-- Add preloading for critical resources -->
+    <link rel="preload" href="_framework/blazor.webassembly.js" as="script" />
+    <link rel="preload" href="css/app.css" as="style" />
+    
+    <!-- Preconnect to external resources -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Standard stylesheets -->
     <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/app.css" />
-    <link rel="icon" type="image/png" href="favicon.png" />
     <link href="FarhanS.Portfolio.styles.css" rel="stylesheet" />
-    <link href="manifest.webmanifest" rel="manifest" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" media="print" onload="this.media='all'" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all'" />
+    <link rel="manifest" href="manifest.webmanifest" />
     <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
+    
+    <!-- Meta tag for cache control -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta name="theme-color" content="#ffffff" />
 </head>
 
 <body>
     <div id="app">
-        <svg class="loading-progress">
-            <circle r="40%" cx="50%" cy="50%" />
-            <circle r="40%" cx="50%" cy="50%" />
-        </svg>
-        <div class="loading-progress-text"></div>
-    </div>
-
-    <div id="blazor-error-ui">
+        <!-- Improved loading spinner -->
+        <div class="loading-container" style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh;">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Loading...</p>
+        </div>
+    </div>    <div id="blazor-error-ui">
         An unhandled error has occurred.
         <a href="." class="reload">Reload</a>
         <span class="dismiss">🗙</span>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
-    <script>navigator.serviceWorker.register('service-worker.js');</script>
+    <script>
+        // Improved service worker registration with cache control
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('service-worker.js', { 
+                    updateViaCache: 'none'
+                })
+                .then(registration => {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                    
+                    // Check for updates immediately
+                    registration.update();
+                    
+                    // Set up periodic checks for updates
+                    setInterval(() => {
+                        registration.update();
+                        console.log('Service Worker update check initiated');
+                    }, 60 * 60 * 1000); // Check every hour
+                })
+                .catch(error => {
+                    console.error('Service Worker registration failed:', error);
+                });
+            });
+        }
+    </script>
 </body>
 
 </html>
