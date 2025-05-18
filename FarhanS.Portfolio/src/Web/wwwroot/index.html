@@ -9,13 +9,18 @@
     <base href="/" />
     
     <!-- Content Security Policy -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; 
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
         script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.monitor.azure.com https://cdn.jsdelivr.net; 
+        script-src-elem 'self' https://js.monitor.azure.com https://cdn.jsdelivr.net; 
         style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; 
-        img-src 'self' https://*.azurestaticapps.net https://logos-world.net https://upload.wikimedia.org data:; 
+        style-src-elem 'self' https://fonts.googleapis.com https://cdn.jsdelivr.net; 
+        img-src 'self' data: https://logos-world.net https://upload.wikimedia.org https://*.amazonaws.com https://*.cloudfront.net; 
         font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; 
-        connect-src 'self' https://api.farhans-portfolio.com https://*.azurestaticapps.net https://js.monitor.azure.com https://dc.services.visualstudio.com https://cdn.jsdelivr.net https://fonts.googleapis.com; 
-        worker-src 'self' blob:;" />
+        connect-src 'self' https://api.farhans-portfolio.com https://staging-api.farhans-portfolio.com https://farhans-portfolio.com https://*.farhans-portfolio.com https://*.azurestaticapps.net https://js.monitor.azure.com https://dc.services.visualstudio.com https://cdn.jsdelivr.net https://fonts.googleapis.com wss://*.farhans-portfolio.com; 
+        manifest-src 'self';
+        worker-src 'self' blob:;
+    " />
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon.png" />
@@ -27,6 +32,7 @@
     <link rel="preload" href="css/app.css" as="style" />
     <link rel="preload" href="js/theme.js" as="script" />
     <link rel="preload" href="js/navigation.js" as="script" />
+    <link rel="preload" href="js/service-worker-register.js" as="script" />
     <link rel="preload" href="js/service-worker-manager.js" as="script" />
     
     <!-- Preconnect to external resources -->
@@ -80,6 +86,10 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
+    
+    <!-- PWA setup -->
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#ffffff" />
 </head>
 
 <body>
@@ -107,9 +117,10 @@
     
     <!-- Navigation script - loaded after main app -->
     <script src="js/navigation.js" defer></script>
-
-    <!-- Service worker manager script with cache busting parameter -->
-    <script src="js/service-worker-manager.js?v=1.0.5" defer></script>
+    
+    <!-- Service worker registration with cache busting -->
+    <script src="js/service-worker-register.js?v=1.1.0" defer></script>
+    <script src="js/service-worker-manager.js?v=1.1.0" defer></script>
     
     <script>
         // Handle Blazor errors gracefully
@@ -146,11 +157,30 @@
                 observer.observe(errorUI, { attributes: true });
             }
             
+            // Force reload function for users experiencing stale caches
+            window.forceRefresh = function() {
+                // Clear caches
+                if ('caches' in window) {
+                    caches.keys().then(function(names) {
+                        for (let name of names) {
+                            caches.delete(name);
+                        }
+                    });
+                }
+                // Hard reload
+                window.location.reload(true);
+            };
+            
             // Register global helper for manual cache clearing
             window.clearAppCache = function() {
-                if (window.swManager && window.swManager.clearCache) {
-                    window.swManager.clearCache();
-                    return true;
+                if ('caches' in window) {
+                    caches.keys().then(function(names) {
+                        for (let name of names) {
+                            caches.delete(name);
+                        }
+                        console.log('App cache cleared');
+                        return true;
+                    });
                 }
                 return false;
             };
@@ -166,11 +196,8 @@
             
             // Apply updates if available
             window.applyUpdate = function() {
-                if (window.swManager && window.swManager.applyUpdate) {
-                    window.swManager.applyUpdate();
-                    return true;
-                }
-                return false;
+                window.location.reload(true);
+                return true;
             };
         });
     </script>

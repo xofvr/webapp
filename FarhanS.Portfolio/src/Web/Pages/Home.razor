@@ -1,8 +1,7 @@
-﻿@page "/"
+@page "/"
 @using Microsoft.AspNetCore.Components.Web
 @using FarhanS.Portfolio.Web.Models
 @inject IJSRuntime JSRuntime
-@inject NavigationManager NavigationManager
 @inject FarhanS.Portfolio.Web.Services.ILinkedInService LinkedInService
 @inject FarhanS.Portfolio.Web.Services.IContactService ContactService
 
@@ -195,122 +194,122 @@
                 </div>
             </section>
         }
-        else if (section == "projects")
-        {
-            <!-- Projects Section -->
-            <section id="projects" class="py-5 section-alt-bg">
-                <div class="container">
-                    <div class="row mb-4">
-                        <div class="col-lg-8 mx-auto text-center">
-                            <h2 class="section-title mb-3">Projects</h2>
-                            <div class="section-divider mb-4"></div>
-                            <p class="lead">Key software and data science projects I've worked on</p>
-                        </div>
-                    </div>
-                    
-                    <div class="row g-4">
-                        <!-- CFD Project -->
-                        <div class="col-md-6 mb-4">
-                            <div class="card h-100 border-0 shadow-sm">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <span class="project-icon bg-primary text-white me-3">
-                                            <i class="bi bi-cpu"></i>
-                                        </span>
-                                        <h5 class="card-title mb-0">CNN-Transformer for CFD</h5>
-                                    </div>
-                                    <p class="card-text">
-                                        My final year project combines CNN and transformer architectures to speed up 
-                                        Computational Fluid Dynamics simulations. The model helps predict how pollution 
-                                        moves around buildings in urban areas, making CFD calculations faster while 
-                                        keeping good accuracy. The project includes a dashboard for visualising results,
-                                    </p>
-                                    <div class="mt-3">
-                                        <span class="badge bg-primary me-1">PyTorch</span>
-                                        <span class="badge bg-primary me-1">Deep Learning</span>
-                                        <span class="badge bg-primary me-1">CFD</span>
-                                    </div>
-                                </div>
+else if (section == "projects")
+{
+    <!-- Projects Section -->
+    <section id="projects" class="py-5 section-alt-bg">
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title mb-3">Projects</h2>
+                    <div class="section-divider mb-4"></div>
+                    <p class="lead">Key software and data science projects I've worked on</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <!-- CFD Project -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="project-icon bg-primary text-white me-3">
+                                    <i class="bi bi-cpu"></i>
+                                </span>
+                                <h5 class="card-title mb-0">CNN-Transformer for CFD</h5>
                             </div>
-                        </div>
-                        
-                        <!-- Insurance Dashboard -->
-                        <div class="col-md-6 mb-4">
-                            <div class="card h-100 border-0 shadow-sm">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <span class="project-icon bg-primary text-white me-3">
-                                            <i class="bi bi-graph-up"></i>
-                                        </span>
-                                        <h5 class="card-title mb-0">Insurance Analytics Dashboard</h5>
-                                    </div>
-                                    <p class="card-text">
-                                        Built a dashboard for insurance data using Django and Python. The system 
-                                        includes ML models to predict insurance claims, multi-user support with different 
-                                        permission levels, and lets users select which prediction model to use for their analysis.
-                                    </p>
-                                    <div class="mt-3">
-                                        <span class="badge bg-primary me-1">Django</span>
-                                        <span class="badge bg-primary me-1">Python</span>
-                                        <span class="badge bg-primary me-1">Docker</span>
-                                        <span class="badge bg-primary me-1">PyTorch</span>
-                                        <span class="badge bg-primary me-1">MySQL</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Vector Database for Documentation -->
-                        <div class="col-md-6 mb-4">
-                            <div class="card h-100 border-0 shadow-sm">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <span class="project-icon bg-primary text-white me-3">
-                                            <i class="bi bi-robot"></i>
-                                        </span>
-                                        <h5 class="card-title mb-0">Documentation Assistant</h5>
-                                    </div>
-                                    <p class="card-text">
-                                        Built a documentation chatbot using Azure ML Studio.
-                                        The system helps scientists find information in technical docs 
-                                        by understanding context and providing relevant answers based on document content.
-                                    </p>
-                                    <div class="mt-3">
-                                        <span class="badge bg-primary me-1">Azure ML</span>
-                                        <span class="badge bg-primary me-1">Vector DB</span>
-                                        <span class="badge bg-primary me-1">OpenAI API</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Sign Language Recognition -->
-                        <div class="col-md-6 mb-4">
-                            <div class="card h-100 border-0 shadow-sm">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <span class="project-icon bg-primary text-white me-3">
-                                            <i class="bi bi-hand-index"></i>
-                                        </span>
-                                        <h5 class="card-title mb-0">Sign Language Recognition</h5>
-                                    </div>
-                                    <p class="card-text">
-                                        Developed an application that recognises hand signs and converts them to text or 
-                                        spoken letters. This university project used computer vision and machine learning 
-                                        to detect hand positions and translate them into corresponding letters.
-                                    </p>
-                                    <div class="mt-3">
-                                        <span class="badge bg-primary me-1">Computer Vision</span>
-                                        <span class="badge bg-primary me-1">ML</span>
-                                        <span class="badge bg-primary me-1">Python</span>
-                                    </div>
-                                </div>
+                            <p class="card-text">
+                                My final year project combines CNN and transformer architectures to speed up 
+                                Computational Fluid Dynamics simulations. The model helps predict how pollution 
+                                moves around buildings in urban areas, making CFD calculations faster while 
+                                keeping good accuracy. The project includes a dashboard for visualising results.
+                            </p>
+                            <div class="mt-3">
+                                <span class="badge bg-primary me-1">PyTorch</span>
+                                <span class="badge bg-primary me-1">Deep Learning</span>
+                                <span class="badge bg-primary me-1">CFD</span>
                             </div>
                         </div>
                     </div>
                 </div>
-            </section>
-        }
+                
+                <!-- Insurance Dashboard -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="project-icon bg-primary text-white me-3">
+                                    <i class="bi bi-graph-up"></i>
+                                </span>
+                                <h5 class="card-title mb-0">Insurance Analytics Dashboard</h5>
+                            </div>
+                            <p class="card-text">
+                                Built a dashboard for insurance data using Django and Python. The system 
+                                includes ML models to predict insurance claims, multi-user support with different 
+                                permission levels, and lets users select which prediction model to use for their analysis.
+                            </p>
+                            <div class="mt-3">
+                                <span class="badge bg-primary me-1">Django</span>
+                                <span class="badge bg-primary me-1">Python</span>
+                                <span class="badge bg-primary me-1">Docker</span>
+                                <span class="badge bg-primary me-1">PyTorch</span>
+                                <span class="badge bg-primary me-1">MySQL</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Vector Database for Documentation -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="project-icon bg-primary text-white me-3">
+                                    <i class="bi bi-robot"></i>
+                                </span>
+                                <h5 class="card-title mb-0">Documentation Assistant</h5>
+                            </div>
+                            <p class="card-text">
+                                Built a documentation chatbot using Azure ML Studio.
+                                The system helps scientists find information in technical docs 
+                                by understanding context and providing relevant answers based on document content.
+                            </p>
+                            <div class="mt-3">
+                                <span class="badge bg-primary me-1">Azure ML</span>
+                                <span class="badge bg-primary me-1">Vector DB</span>
+                                <span class="badge bg-primary me-1">OpenAI API</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sign Language Recognition -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="project-icon bg-primary text-white me-3">
+                                    <i class="bi bi-hand-index"></i>
+                                </span>
+                                <h5 class="card-title mb-0">Sign Language Recognition</h5>
+                            </div>
+                            <p class="card-text">
+                                Developed an application that recognises hand signs and converts them to text or 
+                                spoken letters. This university project used computer vision and machine learning 
+                                to detect hand positions and translate them into corresponding letters.
+                            </p>
+                            <div class="mt-3">
+                                <span class="badge bg-primary me-1">Computer Vision</span>
+                                <span class="badge bg-primary me-1">ML</span>
+                                <span class="badge bg-primary me-1">Python</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
         else if (section == "achievements")
         {
             <!-- Achievements & Impact Section -->
@@ -425,30 +424,32 @@
                                 <div class="card-body d-flex flex-column">
                                     <h3 class="h5 mb-4">Let's Connect</h3>
                                     
-                                    @if (!string.IsNullOrEmpty(formMessage))
+                                    @if (_formSubmitted)
                                     {
-                                        <div class="alert @(formSuccess ? "alert-success" : "alert-danger")">
-                                            <i class="bi @(formSuccess ? "bi-check-circle" : "bi-exclamation-triangle") me-2"></i> @formMessage
-                                        </div>
-                                        @if (formSuccess)
+                                        @if (_formSubmitSuccess)
                                         {
+                                            <div class="alert alert-success">
+                                                <i class="bi bi-check-circle me-2"></i> Thank you for your message! I'll get back to you soon.
+                                            </div>
                                             <button class="btn btn-outline-primary mt-3" @onclick="ResetForm">Send another message</button>
                                         }
                                         else
                                         {
+                                            <div class="alert alert-danger">
+                                                <i class="bi bi-exclamation-triangle me-2"></i> Sorry, there was a problem sending your message. Please try again or contact me directly at contact@farhans.dev.
+                                            </div>
                                             <button class="btn btn-primary mt-3" @onclick="ResetForm">Try Again</button>
                                         }
                                     }
                                     else
                                     {
-                                        <!-- Simple form that submits directly to FormSubmit.co -->
-                                        <form action="https://formsubmit.co/farhan.shakeel@icloud.com" method="POST">
+                                        <!-- Replace the EditForm with a regular HTML form that uses FormSubmit -->
+                                        <form action="https://formsubmit.co/farhan.shakeel@icloud.com" method="POST" class="flex-grow-1" onsubmit="@FormSubmitted">
                                             <!-- FormSubmit configuration -->
-                                            <input type="hidden" name="_subject" value="Portfolio Contact Form: New Message">
+                                            <input type="hidden" name="_subject" value="New portfolio contact from website">
                                             <input type="hidden" name="_captcha" value="false">
                                             <input type="hidden" name="_template" value="table">
-                                            <input type="hidden" name="_next" value="@(NavigationManager.BaseUri + "?submitted=true")">
-                                            <input type="text" name="_honey" style="display:none">
+                                            <input type="hidden" name="_next" value="https://farhans.dev/#contact">
                                             
                                             <div class="mb-3">
                                                 <label for="name" class="form-label">Name</label>
@@ -465,8 +466,16 @@
                                                 <textarea id="message" name="message" class="form-control" rows="4" placeholder="How can I help you?" required minlength="10"></textarea>
                                             </div>
                                             
-                                            <button type="submit" class="btn btn-primary">
-                                                Send Message
+                                            <button type="submit" class="btn btn-primary" disabled="@_isSubmitting">
+                                                @if (_isSubmitting)
+                                                {
+                                                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                                    <span>Sending...</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>Send Message</span>
+                                                }
                                             </button>
                                         </form>
                                     }
@@ -507,9 +516,10 @@
     private LinkedInProfile? Profile { get; set; }
     private string[] sections = new[] { "about", "experience", "skills", "projects", "achievements", "education", "contact" };
     
-    // Simple form state
-    private string formMessage = "";
-    private bool formSuccess = false;
+    // Contact form properties
+    private bool _isSubmitting = false;
+    private bool _formSubmitted = false;
+    private bool _formSubmitSuccess = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -523,20 +533,6 @@
         {
             // Initialize smooth scrolling
             await JSRuntime.InvokeVoidAsync("navigationManager.initializeSmoothScroll");
-            
-            // Check for form submission in URL
-            var uri = new Uri(NavigationManager.Uri);
-            var queryString = System.Web.HttpUtility.ParseQueryString(uri.Query);
-            if (queryString["submitted"] == "true")
-            {
-                formMessage = "Thank you for your message! I'll get back to you soon.";
-                formSuccess = true;
-                
-                // Clean up the URL
-                NavigationManager.NavigateTo(uri.GetLeftPart(UriPartial.Path), forceLoad: false, replace: true);
-                
-                StateHasChanged();
-            }
         }
     }
 
@@ -567,10 +563,18 @@
         await JSRuntime.InvokeVoidAsync("themeManager.toggle");
     }
     
+    // Simple JavaScript function to handle form submit
+    private void FormSubmitted()
+    {
+        _isSubmitting = true;
+        _formSubmitSuccess = true;
+        StateHasChanged();
+    }
+    
     private void ResetForm()
     {
-        formMessage = "";
-        formSuccess = false;
+        _formSubmitted = false;
+        _formSubmitSuccess = false;
         StateHasChanged();
     }
 }
